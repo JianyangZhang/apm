@@ -1,0 +1,60 @@
+@charset "utf-8";
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+body {
+    font-family: open sans;
+    margin: 0;
+}
+
+button {
+    font-family: open sans !important;
+}
+
+#main {
+    border: solid 1px #D6D9D8;
+    border-top-width: 0;
+}
+
+#showcase {
+    width: 100%;
+    height: 600px;
+}
+
+#console {
+    position: absolute;
+    text-align: center;
+    display: table;
+    background-color: #F0F0F0;
+    left: 2px;
+    bottom: 2px;
+}
+
+#toolbar {
+    background-color: #F0F0F0;
+    width: 100%;
+    height: 30px;
+}
+
+#toolbar button {
+    height: 29px;
+}
+
+.vis-up, .vis-down, .vis-left, .vis-right {
+    display: none !important;
+}
+
+div.vis-network div.vis-navigation div.vis-button.vis-zoomExtends {
+    background-image: url("../img/network/zoomExtends.png");
+    right: 10px;
+    top: 20px;
+}
+
+div.vis-network div.vis-navigation div.vis-button.vis-zoomIn {
+    background-image: url("../img/network/plus.png");
+    right: 10px;
+    top: 60px;
+}
+div.vis-network div.vis-navigation div.vis-button.vis-zoomOut {
+    background-image: url("../img/network/minus.png");
+    right: 10px;
+    top: 100px;
+}
