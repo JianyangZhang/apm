@@ -2,17 +2,30 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Toolbar } from "./components/Toolbar";
 import { Network } from "./components/Network";
-import { after_final_mount } from "./constants/after_final_mount";
+import { afterFinalMount } from "./constants/afterFinalMount";
 
 var Topology = React.createClass({
-    componentDidMount: function () {
-        after_final_mount();
+    getInitialState: function() {
+        return {
+            edit_mode: "none"
+        }
+    },
+    componentDidMount: function() {
+        afterFinalMount();
+    },
+    changeEditMode: function(current_mode: string) {
+        this.setState({
+            edit_mode: current_mode
+        });
+    },
+    componentDidUpdate: function() {
+        // console.log('edit_mode: ' + this.state.edit_mode);
     },
     render: function() {
         return (
             <div id="main">
-                <Toolbar />
-                <Network />
+                <Toolbar changeEditMode={this.changeEditMode} />
+                <Network currentEditMode={this.state.edit_mode} />
                 <div id="console">console</div>
             </div>
         )

@@ -6,6 +6,7 @@ exports.FuncButton = React.createClass({
         return {
             name: "button",
             value: "button",
+            seat: "toolbar",
             changeEditMode: function (current_mode) {
                 console.log('ToolbarButton layer:' + current_mode);
             }
@@ -18,4 +19,4 @@ exports.FuncButton = React.createClass({
         return (React.createElement("button", { onClick: this.changeEditMode, name: this.props.name }, this.props.value));
     }
 });
-//# sourceMappingURL=ToolbarButton.js.map
+//# sourceMappingURL=FuncButton.js.map

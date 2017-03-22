@@ -1,8 +1,15 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { ToolbarButton } from "./ToolbarButton";
+import { FuncButton } from "./FuncButton";
 
 export var Toolbar = React.createClass({
+    getDefaultProps: function() {
+        return {
+            changeEditMode: function(current_mode: string) {
+                console.log('Toolbar layer');
+            }
+        }
+    },
     getInitialState: function() {
         return {
             isVisible: true,
@@ -15,12 +22,12 @@ export var Toolbar = React.createClass({
 
         return (
             <div id="toolbar" style={style}>
-                <ToolbarButton name="add_node" value="add node" />
-                <ToolbarButton name="edit_node" value="edit node" />
-                <ToolbarButton name="add_edge" value="add edge" />
-                <ToolbarButton name="edit_edge" value="edit edge" />
-                <ToolbarButton name="delete_selected" value="delete" />
-                <ToolbarButton name="layout" value="layout" />
+                <FuncButton changeEditMode={this.props.changeEditMode} name="add_node" value="add node" seat="toolbar" />
+                <FuncButton changeEditMode={this.props.changeEditMode} name="edit_node" value="edit node" seat="toolbar" />
+                <FuncButton changeEditMode={this.props.changeEditMode} name="add_edge" value="add edge" seat="toolbar" />
+                <FuncButton changeEditMode={this.props.changeEditMode} name="edit_edge" value="edit edge" seat="toolbar" />
+                <FuncButton changeEditMode={this.props.changeEditMode} name="delete_selected" value="delete" seat="toolbar" />
+                <FuncButton changeEditMode={this.props.changeEditMode} name="layout" value="layout" seat="toolbar" />
             </div>
         )
     }

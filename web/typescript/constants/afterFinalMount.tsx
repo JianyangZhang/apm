@@ -1,4 +1,4 @@
-export function after_final_mount() {
+export function afterFinalMount() {
     $("#showcase").css("height", $(window).height() - 30);
 
 

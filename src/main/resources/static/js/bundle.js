@@ -50,15 +50,28 @@
 	var ReactDOM = __webpack_require__(32);
 	var Toolbar_1 = __webpack_require__(178);
 	var Network_1 = __webpack_require__(180);
-	var after_final_mount_1 = __webpack_require__(186);
+	var afterFinalMount_1 = __webpack_require__(185);
 	var Topology = React.createClass({
+	    getInitialState: function () {
+	        return {
+	            edit_mode: "none"
+	        };
+	    },
 	    componentDidMount: function () {
-	        after_final_mount_1.after_final_mount();
+	        afterFinalMount_1.afterFinalMount();
+	    },
+	    changeEditMode: function (current_mode) {
+	        this.setState({
+	            edit_mode: current_mode
+	        });
+	    },
+	    componentDidUpdate: function () {
+	        // console.log('edit_mode: ' + this.state.edit_mode);
 	    },
 	    render: function () {
 	        return (React.createElement("div", { id: "main" },
-	            React.createElement(Toolbar_1.Toolbar, null),
-	            React.createElement(Network_1.Network, null),
+	            React.createElement(Toolbar_1.Toolbar, { changeEditMode: this.changeEditMode }),
+	            React.createElement(Network_1.Network, { currentEditMode: this.state.edit_mode }),
 	            React.createElement("div", { id: "console" }, "console")));
 	    }
 	});
@@ -21439,8 +21452,15 @@
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
-	var ToolbarButton_1 = __webpack_require__(179);
+	var FuncButton_1 = __webpack_require__(179);
 	exports.Toolbar = React.createClass({
+	    getDefaultProps: function () {
+	        return {
+	            changeEditMode: function (current_mode) {
+	                console.log('Toolbar layer');
+	            }
+	        };
+	    },
 	    getInitialState: function () {
 	        return {
 	            isVisible: true,
@@ -21451,12 +21471,12 @@
 	            display: this.state.isVisible ? "block" : "none"
 	        };
 	        return (React.createElement("div", { id: "toolbar", style: style },
-	            React.createElement(ToolbarButton_1.ToolbarButton, { name: "add_node", value: "add node" }),
-	            React.createElement(ToolbarButton_1.ToolbarButton, { name: "edit_node", value: "edit node" }),
-	            React.createElement(ToolbarButton_1.ToolbarButton, { name: "add_edge", value: "add edge" }),
-	            React.createElement(ToolbarButton_1.ToolbarButton, { name: "edit_edge", value: "edit edge" }),
-	            React.createElement(ToolbarButton_1.ToolbarButton, { name: "delete_selected", value: "delete" }),
-	            React.createElement(ToolbarButton_1.ToolbarButton, { name: "layout", value: "layout" })));
+	            React.createElement(FuncButton_1.FuncButton, { changeEditMode: this.props.changeEditMode, name: "add_node", value: "add node", seat: "toolbar" }),
+	            React.createElement(FuncButton_1.FuncButton, { changeEditMode: this.props.changeEditMode, name: "edit_node", value: "edit node", seat: "toolbar" }),
+	            React.createElement(FuncButton_1.FuncButton, { changeEditMode: this.props.changeEditMode, name: "add_edge", value: "add edge", seat: "toolbar" }),
+	            React.createElement(FuncButton_1.FuncButton, { changeEditMode: this.props.changeEditMode, name: "edit_edge", value: "edit edge", seat: "toolbar" }),
+	            React.createElement(FuncButton_1.FuncButton, { changeEditMode: this.props.changeEditMode, name: "delete_selected", value: "delete", seat: "toolbar" }),
+	            React.createElement(FuncButton_1.FuncButton, { changeEditMode: this.props.changeEditMode, name: "layout", value: "layout", seat: "toolbar" })));
 	    }
 	});
 
@@ -21468,15 +21488,22 @@
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
-	exports.ToolbarButton = React.createClass({
+	exports.FuncButton = React.createClass({
 	    getDefaultProps: function () {
 	        return {
 	            name: "button",
-	            value: "button"
+	            value: "button",
+	            seat: "toolbar",
+	            changeEditMode: function (current_mode) {
+	                console.log('ToolbarButton layer:' + current_mode);
+	            }
 	        };
 	    },
+	    changeEditMode: function () {
+	        this.props.changeEditMode(this.props.name);
+	    },
 	    render: function () {
-	        return (React.createElement("button", { name: this.props.name }, this.props.value));
+	        return (React.createElement("button", { onClick: this.changeEditMode, name: this.props.name }, this.props.value));
 	    }
 	});
 
@@ -21488,11 +21515,48 @@
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
+	var vis = __webpack_require__(181);
+	var datagram = __webpack_require__(182);
+	var options_1 = __webpack_require__(183);
 	var Showcase_1 = __webpack_require__(184);
-	var after_network_mount_1 = __webpack_require__(185);
+	var network;
 	exports.Network = React.createClass({
+	    getDefaultProps: function () {
+	        return {
+	            currentEditMode: "none"
+	        };
+	    },
 	    componentDidMount: function () {
-	        after_network_mount_1.after_network_mount();
+	        var data = {
+	            nodes: datagram.nodes,
+	            edges: datagram.edges
+	        };
+	        network = new vis.Network(document.getElementById('showcase'), data, options_1.options);
+	    },
+	    componentDidUpdate: function () {
+	        switch (this.props.currentEditMode) {
+	            case "add_node":
+	                network.addNodeMode();
+	                break;
+	            case "edit_node":
+	                network.editNode();
+	                break;
+	            case "add_edge":
+	                network.addEdgeMode();
+	                break;
+	            case "edit_edge":
+	                network.editEdgeMode();
+	                break;
+	            case "delete_selected":
+	                network.deleteSelected();
+	                break;
+	            case "layout":
+	                console.log("open layout selector");
+	                break;
+	            default:
+	                console.log("none");
+	                break;
+	        }
 	    },
 	    render: function () {
 	        return (React.createElement("div", null,
@@ -74050,55 +74114,21 @@
 	var React = __webpack_require__(1);
 	exports.Showcase = React.createClass({
 	    render: function () {
-	        return (React.createElement("div", { id: "showcase" }, "i am showcase"));
+	        return (React.createElement("div", { id: "showcase" }));
 	    }
 	});
 
 
 /***/ },
 /* 185 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperty(exports, "__esModule", { value: true });
-	var vis = __webpack_require__(181);
-	var datagram = __webpack_require__(182);
-	var options_1 = __webpack_require__(183);
-	function after_network_mount() {
-	    var data = {
-	        nodes: datagram.nodes,
-	        edges: datagram.edges
-	    };
-	    var network = new vis.Network(document.getElementById('showcase'), data, options_1.options);
-	    $("#toolbar [name='add_node']").on("click", function () {
-	        network.addNodeMode();
-	    });
-	    $("#toolbar [name='edit_node']").on("click", function () {
-	        network.editNode();
-	    });
-	    $("#toolbar [name='add_edge']").on("click", function () {
-	        network.addEdgeMode();
-	    });
-	    $("#toolbar [name='edit_edge']").on("click", function () {
-	        network.editEdgeMode();
-	    });
-	    $("#toolbar [name='delete_selected']").on("click", function () {
-	        network.deleteSelected();
-	    });
-	}
-	exports.after_network_mount = after_network_mount;
-
-
-/***/ },
-/* 186 */
 /***/ function(module, exports) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
-	function after_final_mount() {
+	function afterFinalMount() {
 	    $("#showcase").css("height", $(window).height() - 30);
 	}
-	exports.after_final_mount = after_final_mount;
+	exports.afterFinalMount = afterFinalMount;
 
 
 /***/ }

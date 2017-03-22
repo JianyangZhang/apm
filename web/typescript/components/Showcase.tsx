@@ -5,7 +5,6 @@ export var Showcase = React.createClass({
     render: function() {
         return (
             <div id="showcase">
-                i am showcase
             </div>
         )
     }
