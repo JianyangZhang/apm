@@ -25,6 +25,7 @@ export var Network = React.createClass({
                 network.addNodeMode();
                 break;
             case "edit_node":
+                console.log("open edit node panel");
                 network.editNode();
                 break;
             case "add_edge":
@@ -37,7 +38,7 @@ export var Network = React.createClass({
                 network.deleteSelected();
                 break;
             case "layout":
-                console.log("open layout selector");
+                console.log("open layout panel");
                 break;
             default:
                 console.log("none");

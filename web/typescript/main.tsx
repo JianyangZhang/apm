@@ -2,6 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Toolbar } from "./components/Toolbar";
 import { Network } from "./components/Network";
+import { Console } from "./components/Console";
 import { afterFinalMount } from "./constants/afterFinalMount";
 
 var Topology = React.createClass({
@@ -26,7 +27,7 @@ var Topology = React.createClass({
             <div id="main">
                 <Toolbar changeEditMode={this.changeEditMode} />
                 <Network currentEditMode={this.state.edit_mode} />
-                <div id="console">console</div>
+                <Console currentEditMode={this.state.edit_mode} />
             </div>
         )
     }
