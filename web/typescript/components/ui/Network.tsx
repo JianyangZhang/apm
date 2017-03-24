@@ -1,41 +1,38 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as vis from "vis";
-import * as datagram from "../constants/datagram";
-import { options } from "../constants/options";
-import { Showcase } from "./Showcase";
-var network;
+import * as datagram from "../../constants/datagram";
+import { options } from "../../constants/options";
 
-export var Network = React.createClass({
-    getDefaultProps: function() {
-        return {
-            currentEditMode: "none"
-        }
-    },
-    componentDidMount: function() {
-        var data = {
+export class Network extends React.Component<any, any> {
+    private network:any;
+    constructor(props, context) {
+        super(props, context);
+    }
+    componentDidMount() {
+        let data = {
             nodes: datagram.nodes,
             edges: datagram.edges
         };
-        network = new vis.Network(document.getElementById('showcase'), data, options);
-    },
-    componentDidUpdate: function() {
+        this.network = new vis.Network(document.getElementById('showcase'), data, options);
+    }
+    componentDidUpdate() {
         switch (this.props.currentEditMode) {
             case "add_node":
-                network.addNodeMode();
+                this.network.addNodeMode();
                 break;
             case "edit_node":
                 console.log("open edit node panel");
-                network.editNode();
+                this.network.editNode();
                 break;
             case "add_edge":
-                network.addEdgeMode();
+                this.network.addEdgeMode();
                 break;
             case "edit_edge":
-                network.editEdgeMode();
+                this.network.editEdgeMode();
                 break;
             case "delete_selected":
-                network.deleteSelected();
+                this.network.deleteSelected();
                 break;
             case "layout":
                 console.log("open layout panel");
@@ -44,12 +41,11 @@ export var Network = React.createClass({
                 console.log("none");
                 break;
         }
-    },
-    render: function() {
+    }
+    render() {
         return (
-            <div>
-                <Showcase />
+            <div id="showcase">
             </div>
         )
     }
-});
+}

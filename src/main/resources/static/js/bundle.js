@@ -48,35 +48,8 @@
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(32);
-	var Toolbar_1 = __webpack_require__(178);
-	var Network_1 = __webpack_require__(180);
-	var Console_1 = __webpack_require__(185);
-	var afterFinalMount_1 = __webpack_require__(188);
-	var Topology = React.createClass({
-	    getInitialState: function () {
-	        return {
-	            edit_mode: "none"
-	        };
-	    },
-	    componentDidMount: function () {
-	        afterFinalMount_1.afterFinalMount();
-	    },
-	    changeEditMode: function (current_mode) {
-	        this.setState({
-	            edit_mode: current_mode
-	        });
-	    },
-	    componentDidUpdate: function () {
-	        // console.log('edit_mode: ' + this.state.edit_mode);
-	    },
-	    render: function () {
-	        return (React.createElement("div", { id: "main" },
-	            React.createElement(Toolbar_1.Toolbar, { changeEditMode: this.changeEditMode }),
-	            React.createElement(Network_1.Network, { currentEditMode: this.state.edit_mode }),
-	            React.createElement(Console_1.Console, { currentEditMode: this.state.edit_mode })));
-	    }
-	});
-	ReactDOM.render(React.createElement(Topology, null), document.getElementById('topology'));
+	var Topology_1 = __webpack_require__(178);
+	ReactDOM.render(React.createElement(Topology_1.Topology, null), document.getElementById('topology'));
 
 
 /***/ },
@@ -21451,35 +21424,52 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
+	var __extends = (this && this.__extends) || (function () {
+	    var extendStatics = Object.setPrototypeOf ||
+	        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+	        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+	    return function (d, b) {
+	        extendStatics(d, b);
+	        function __() { this.constructor = d; }
+	        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	    };
+	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
-	var FuncButton_1 = __webpack_require__(179);
-	exports.Toolbar = React.createClass({
-	    getDefaultProps: function () {
-	        return {
-	            changeEditMode: function (current_mode) {
-	                console.log('Toolbar layer');
-	            }
+	var Toolbar_1 = __webpack_require__(179);
+	var Network_1 = __webpack_require__(181);
+	var Console_1 = __webpack_require__(185);
+	var afterFinalMount_1 = __webpack_require__(188);
+	var Topology = (function (_super) {
+	    __extends(Topology, _super);
+	    function Topology(props, context) {
+	        var _this = _super.call(this, props, context) || this;
+	        _this.initState = function () {
+	            return {
+	                edit_mode: "none"
+	            };
 	        };
-	    },
-	    getInitialState: function () {
-	        return {
-	            isVisible: true,
-	        };
-	    },
-	    render: function () {
-	        var style = {
-	            display: this.state.isVisible ? "block" : "none"
-	        };
-	        return (React.createElement("div", { id: "toolbar", style: style },
-	            React.createElement(FuncButton_1.FuncButton, { changeEditMode: this.props.changeEditMode, name: "add_node", value: "add node", seat: "toolbar" }),
-	            React.createElement(FuncButton_1.FuncButton, { changeEditMode: this.props.changeEditMode, name: "edit_node", value: "edit node", seat: "toolbar" }),
-	            React.createElement(FuncButton_1.FuncButton, { changeEditMode: this.props.changeEditMode, name: "add_edge", value: "add edge", seat: "toolbar" }),
-	            React.createElement(FuncButton_1.FuncButton, { changeEditMode: this.props.changeEditMode, name: "edit_edge", value: "edit edge", seat: "toolbar" }),
-	            React.createElement(FuncButton_1.FuncButton, { changeEditMode: this.props.changeEditMode, name: "delete_selected", value: "delete", seat: "toolbar" }),
-	            React.createElement(FuncButton_1.FuncButton, { changeEditMode: this.props.changeEditMode, name: "layout", value: "layout", seat: "toolbar" })));
+	        _this.state = _this.initState();
+	        return _this;
 	    }
-	});
+	    Topology.prototype.componentDidMount = function () {
+	        afterFinalMount_1.afterFinalMount();
+	    };
+	    Topology.prototype.changeEditMode = function (current_mode) {
+	        this.setState({
+	            edit_mode: current_mode
+	        });
+	    };
+	    Topology.prototype.render = function () {
+	        return (React.createElement("div", { id: "main" },
+	            React.createElement(Toolbar_1.Toolbar, { changeEditMode: this.changeEditMode.bind(this) }),
+	            React.createElement(Network_1.Network, { currentEditMode: this.state.edit_mode }),
+	            React.createElement(Console_1.Console, { currentEditMode: this.state.edit_mode })));
+	    };
+	    return Topology;
+	}(React.Component));
+	exports.Topology = Topology;
+	;
 
 
 /***/ },
@@ -21487,70 +21477,105 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
+	var __extends = (this && this.__extends) || (function () {
+	    var extendStatics = Object.setPrototypeOf ||
+	        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+	        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+	    return function (d, b) {
+	        extendStatics(d, b);
+	        function __() { this.constructor = d; }
+	        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	    };
+	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
-	exports.FuncButton = React.createClass({
-	    getDefaultProps: function () {
-	        return {
-	            name: "button",
-	            value: "button",
-	            seat: "toolbar",
-	            changeEditMode: function (current_mode) {
-	                console.log('ToolbarButton layer:' + current_mode);
-	            }
+	var Toolbar = (function (_super) {
+	    __extends(Toolbar, _super);
+	    function Toolbar(props, context) {
+	        var _this = _super.call(this, props, context) || this;
+	        _this.initState = function () {
+	            return {
+	                isLocked: false,
+	            };
 	        };
-	    },
-	    changeEditMode: function () {
-	        this.props.changeEditMode(this.props.name);
-	    },
-	    render: function () {
-	        return (React.createElement("button", { onClick: this.changeEditMode, name: this.props.name }, this.props.value));
+	        _this.state = _this.initState();
+	        return _this;
 	    }
-	});
+	    Toolbar.prototype.render = function () {
+	        return (React.createElement("div", { id: "toolbar" },
+	            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "add_node", value: "增加节点", seat: "toolbar" }),
+	            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "edit_node", value: "编辑节点", seat: "toolbar" }),
+	            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "add_edge", value: "增加连接", seat: "toolbar" }),
+	            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "edit_edge", value: "编辑连接", seat: "toolbar" }),
+	            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "delete_selected", value: "删除元素", seat: "toolbar" }),
+	            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "layout", value: "预设布局", seat: "toolbar" })));
+	    };
+	    return Toolbar;
+	}(React.Component));
+	exports.Toolbar = Toolbar;
+	var FuncBtn = (function (_super) {
+	    __extends(FuncBtn, _super);
+	    function FuncBtn(props, context) {
+	        return _super.call(this, props, context) || this;
+	    }
+	    FuncBtn.prototype.render = function () {
+	        var _this = this;
+	        return (React.createElement("button", { onClick: function () { return _this.props.changeEditMode(_this.props.name); }, name: this.props.name }, this.props.value));
+	    };
+	    return FuncBtn;
+	}(React.Component));
 
 
 /***/ },
-/* 180 */
+/* 180 */,
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
+	var __extends = (this && this.__extends) || (function () {
+	    var extendStatics = Object.setPrototypeOf ||
+	        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+	        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+	    return function (d, b) {
+	        extendStatics(d, b);
+	        function __() { this.constructor = d; }
+	        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	    };
+	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
-	var vis = __webpack_require__(181);
-	var datagram = __webpack_require__(182);
-	var options_1 = __webpack_require__(183);
-	var Showcase_1 = __webpack_require__(184);
-	var network;
-	exports.Network = React.createClass({
-	    getDefaultProps: function () {
-	        return {
-	            currentEditMode: "none"
-	        };
-	    },
-	    componentDidMount: function () {
+	var vis = __webpack_require__(182);
+	var datagram = __webpack_require__(183);
+	var options_1 = __webpack_require__(184);
+	var Network = (function (_super) {
+	    __extends(Network, _super);
+	    function Network(props, context) {
+	        return _super.call(this, props, context) || this;
+	    }
+	    Network.prototype.componentDidMount = function () {
 	        var data = {
 	            nodes: datagram.nodes,
 	            edges: datagram.edges
 	        };
-	        network = new vis.Network(document.getElementById('showcase'), data, options_1.options);
-	    },
-	    componentDidUpdate: function () {
+	        this.network = new vis.Network(document.getElementById('showcase'), data, options_1.options);
+	    };
+	    Network.prototype.componentDidUpdate = function () {
 	        switch (this.props.currentEditMode) {
 	            case "add_node":
-	                network.addNodeMode();
+	                this.network.addNodeMode();
 	                break;
 	            case "edit_node":
 	                console.log("open edit node panel");
-	                network.editNode();
+	                this.network.editNode();
 	                break;
 	            case "add_edge":
-	                network.addEdgeMode();
+	                this.network.addEdgeMode();
 	                break;
 	            case "edit_edge":
-	                network.editEdgeMode();
+	                this.network.editEdgeMode();
 	                break;
 	            case "delete_selected":
-	                network.deleteSelected();
+	                this.network.deleteSelected();
 	                break;
 	            case "layout":
 	                console.log("open layout panel");
@@ -21559,16 +21584,17 @@
 	                console.log("none");
 	                break;
 	        }
-	    },
-	    render: function () {
-	        return (React.createElement("div", null,
-	            React.createElement(Showcase_1.Showcase, null)));
-	    }
-	});
+	    };
+	    Network.prototype.render = function () {
+	        return (React.createElement("div", { id: "showcase" }));
+	    };
+	    return Network;
+	}(React.Component));
+	exports.Network = Network;
 
 
 /***/ },
-/* 181 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -73912,12 +73938,12 @@
 	;
 
 /***/ },
-/* 182 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
-	var vis = __webpack_require__(181);
+	var vis = __webpack_require__(182);
 	exports.nodes = new vis.DataSet([{
 	        id: 1,
 	        label: 'alpha-1',
@@ -74016,7 +74042,7 @@
 
 
 /***/ },
-/* 183 */
+/* 184 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -74108,88 +74134,111 @@
 
 
 /***/ },
-/* 184 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperty(exports, "__esModule", { value: true });
-	var React = __webpack_require__(1);
-	exports.Showcase = React.createClass({
-	    render: function () {
-	        return (React.createElement("div", { id: "showcase" }));
-	    }
-	});
-
-
-/***/ },
 /* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	Object.defineProperty(exports, "__esModule", { value: true });
-	var React = __webpack_require__(1);
-	var PopMessage_1 = __webpack_require__(186);
-	exports.Console = React.createClass({
-	    getDefaultProps: function () {
-	        return {
-	            currentEditMode: "none"
-	        };
-	    },
-	    render: function () {
-	        switch (this.props.currentEditMode) {
-	            case "none":
-	                return (React.createElement(PopMessage_1.PopMessage, { id: "console", message: "" }));
-	            case "add_node":
-	                return (React.createElement(PopMessage_1.PopMessage, { id: "console", message: "left-click in the white space to place a new node" }));
-	            case "edit_node":
-	                return (React.createElement("div", { id: "console" }, "***edit node panel will appear at here***"));
-	            case "add_edge":
-	                return (React.createElement(PopMessage_1.PopMessage, { id: "console", message: "drag from one node to another node to connect them" }));
-	            case "edit_edge":
-	                return (React.createElement(PopMessage_1.PopMessage, { id: "console", message: "drag the end of the edge to another node" }));
-	            case "delete_selected":
-	                return (React.createElement(PopMessage_1.PopMessage, { id: "console", message: "The selected element has been deleted" }));
-	            case "layout":
-	                return (React.createElement("div", { id: "console" }, "***layout panel will appear at here***"));
-	            default:
-	                return (React.createElement("div", { id: "console" }));
-	        }
-	    }
-	});
-
-
-/***/ },
-/* 186 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
+	var __extends = (this && this.__extends) || (function () {
+	    var extendStatics = Object.setPrototypeOf ||
+	        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+	        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+	    return function (d, b) {
+	        extendStatics(d, b);
+	        function __() { this.constructor = d; }
+	        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	    };
+	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
 	var $ = __webpack_require__(187);
-	exports.PopMessage = React.createClass({
-	    getDefaultProps: function () {
-	        return {
-	            id: "console",
-	            message: ""
-	        };
-	    },
-	    componentWillUpdate: function () {
-	        var id = "#" + this.props.id;
-	        $(id).show();
-	    },
-	    componentDidUpdate: function () {
-	        var id = "#" + this.props.id;
-	        setTimeout(function () {
-	            $(id).fadeOut(1000);
-	        }, 1500);
-	    },
-	    render: function () {
-	        return (React.createElement("div", { id: this.props.id }, this.props.message));
+	var Console = (function (_super) {
+	    __extends(Console, _super);
+	    function Console(props, context) {
+	        return _super.call(this, props, context) || this;
 	    }
-	});
+	    Console.prototype.render = function () {
+	        switch (this.props.currentEditMode) {
+	            case "none":
+	                return (React.createElement(PopMessage, { id: "pop_message", message: "" }));
+	            case "add_node":
+	                return (React.createElement(PopMessage, { id: "pop_message", message: "增加新节点: 在空白处左键单击" }));
+	            case "edit_node":
+	                return (React.createElement(EditNodePanel, null));
+	            case "add_edge":
+	                return (React.createElement(PopMessage, { id: "pop_message", message: "增加连接: 从一个节点拖拽到另一个节点" }));
+	            case "edit_edge":
+	                return (React.createElement(PopMessage, { id: "pop_message", message: "编辑连接: 拖拽连接的末端" }));
+	            case "delete_selected":
+	                return (React.createElement(PopMessage, { id: "pop_message", message: "选中的元素已经被删除" }));
+	            case "layout":
+	                return (React.createElement(LayoutPanel, null));
+	            default:
+	                return (React.createElement("div", { id: "console" }));
+	        }
+	    };
+	    return Console;
+	}(React.Component));
+	exports.Console = Console;
+	var PopMessage = (function (_super) {
+	    __extends(PopMessage, _super);
+	    function PopMessage(props, context) {
+	        return _super.call(this, props, context) || this;
+	    }
+	    PopMessage.prototype.componentDidMount = function () {
+	        setTimeout(function () {
+	            $("#pop_message").fadeOut(400);
+	        }, 1800);
+	    };
+	    PopMessage.prototype.componentWillUpdate = function () {
+	        $("#pop_message").show();
+	    };
+	    PopMessage.prototype.componentDidUpdate = function () {
+	        setTimeout(function () {
+	            $("#pop_message").fadeOut(400);
+	        }, 1800);
+	    };
+	    PopMessage.prototype.render = function () {
+	        return (React.createElement("div", { id: this.props.id }, this.props.message));
+	    };
+	    return PopMessage;
+	}(React.Component));
+	var EditNodePanel = (function (_super) {
+	    __extends(EditNodePanel, _super);
+	    function EditNodePanel(props, context) {
+	        return _super.call(this, props, context) || this;
+	    }
+	    EditNodePanel.prototype.render = function () {
+	        return (React.createElement("div", { id: "console" },
+	            React.createElement("span", null, "\u8282\u70B9\u6807\u7B7E: "),
+	            React.createElement("input", { type: "textarea", size: 30 }),
+	            React.createElement("span", null, "\u8282\u70B9\u56FE\u5F62: "),
+	            React.createElement("input", { type: "textarea", size: 30, placeholder: "ellipse/circle/box/url" }),
+	            React.createElement("button", null, "\u786E\u8BA4"),
+	            React.createElement("button", null, "\u53D6\u6D88")));
+	    };
+	    return EditNodePanel;
+	}(React.Component));
+	var LayoutPanel = (function (_super) {
+	    __extends(LayoutPanel, _super);
+	    function LayoutPanel(props, context) {
+	        return _super.call(this, props, context) || this;
+	    }
+	    LayoutPanel.prototype.render = function () {
+	        return (React.createElement("div", { id: "console" },
+	            React.createElement("span", null, "\u5E03\u5C40\u7C7B\u578B: "),
+	            React.createElement("select", null,
+	                React.createElement("option", { value: "default" }, "\u9ED8\u8BA4\u5E03\u5C40"),
+	                React.createElement("option", { value: "LR" }, "\u4ECE\u5DE6\u81F3\u53F3"),
+	                React.createElement("option", { value: "RL" }, "\u4ECE\u53F3\u81F3\u5DE6"),
+	                React.createElement("option", { value: "UD" }, "\u4ECE\u4E0A\u81F3\u4E0B"),
+	                React.createElement("option", { value: "DU" }, "\u4ECE\u4E0B\u81F3\u4E0A"))));
+	    };
+	    return LayoutPanel;
+	}(React.Component));
 
 
 /***/ },
+/* 186 */,
 /* 187 */
 /***/ function(module, exports, __webpack_require__) {
 

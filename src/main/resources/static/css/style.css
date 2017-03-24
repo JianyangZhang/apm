@@ -28,6 +28,14 @@ button {
     bottom: 2px;
 }
 
+#pop_message {
+    position: absolute;
+    text-align: center;
+    background-color: #F0F0F0;
+    left: 2px;
+    bottom: 2px;
+}
+
 #toolbar {
     background-color: #F0F0F0;
     width: 100%;
