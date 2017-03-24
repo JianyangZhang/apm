@@ -61,6 +61,7 @@ export var options = {
             callback(nodeInfo);
         },
         editNode: function(nodeInfo, callback) {
+            
         },
         addEdge: true,
         editEdge: true,

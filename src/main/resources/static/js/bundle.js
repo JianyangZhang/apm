@@ -21436,35 +21436,76 @@
 	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
+	var vis = __webpack_require__(181);
+	var datagram = __webpack_require__(182);
+	var options_1 = __webpack_require__(183);
 	var Toolbar_1 = __webpack_require__(179);
-	var Network_1 = __webpack_require__(181);
-	var Console_1 = __webpack_require__(185);
-	var afterFinalMount_1 = __webpack_require__(188);
+	var Network_1 = __webpack_require__(180);
+	var Console_1 = __webpack_require__(184);
+	var afterFinalMount_1 = __webpack_require__(186);
 	var Topology = (function (_super) {
 	    __extends(Topology, _super);
 	    function Topology(props, context) {
 	        var _this = _super.call(this, props, context) || this;
 	        _this.initState = function () {
 	            return {
-	                edit_mode: "none"
+	                network: _this.network,
+	                data: _this.data,
+	                options: _this.options,
+	                edit_mode: "none",
+	                isEditNodePanelVisible: false,
+	                isLayoutPanelVisible: false
 	            };
 	        };
+	        _this.changeEditMode = function (current_mode) {
+	            _this.setState({
+	                edit_mode: current_mode
+	            });
+	        };
+	        _this.toggleEditNodePanelVisible = function () {
+	            if (_this.state.isEditNodePanelVisible) {
+	                _this.setState({
+	                    isEditNodePanelVisible: false
+	                });
+	            }
+	            else {
+	                _this.setState({
+	                    isEditNodePanelVisible: true
+	                });
+	            }
+	        };
+	        _this.toggleLayoutPanelVisible = function () {
+	            if (_this.state.isLayoutPanelVisible) {
+	                _this.setState({
+	                    isLayoutPanelVisible: false
+	                });
+	            }
+	            else {
+	                _this.setState({
+	                    isLayoutPanelVisible: true
+	                });
+	            }
+	        };
+	        _this.data = {
+	            nodes: datagram.nodes,
+	            edges: datagram.edges
+	        };
+	        _this.options = options_1.options;
 	        _this.state = _this.initState();
 	        return _this;
 	    }
 	    Topology.prototype.componentDidMount = function () {
-	        afterFinalMount_1.afterFinalMount();
-	    };
-	    Topology.prototype.changeEditMode = function (current_mode) {
+	        this.network = new vis.Network(document.getElementById('showcase'), this.state.data, this.state.options);
 	        this.setState({
-	            edit_mode: current_mode
+	            network: this.network
 	        });
+	        afterFinalMount_1.afterFinalMount();
 	    };
 	    Topology.prototype.render = function () {
 	        return (React.createElement("div", { id: "main" },
-	            React.createElement(Toolbar_1.Toolbar, { changeEditMode: this.changeEditMode.bind(this) }),
-	            React.createElement(Network_1.Network, { currentEditMode: this.state.edit_mode }),
-	            React.createElement(Console_1.Console, { currentEditMode: this.state.edit_mode })));
+	            React.createElement(Toolbar_1.Toolbar, { isEditNodePanelVisible: this.state.isEditNodePanelVisible, toggleEditNodePanelVisible: this.toggleEditNodePanelVisible, isLayoutPanelVisible: this.state.isLayoutPanelVisible, toggleLayoutPanelVisible: this.toggleLayoutPanelVisible, changeEditMode: this.changeEditMode }),
+	            React.createElement(Network_1.Network, { network: this.state.network, currentEditMode: this.state.edit_mode }),
+	            React.createElement(Console_1.Console, { isEditNodePanelVisible: this.state.isEditNodePanelVisible, toggleEditNodePanelVisible: this.toggleEditNodePanelVisible, isLayoutPanelVisible: this.state.isLayoutPanelVisible, toggleLayoutPanelVisible: this.toggleLayoutPanelVisible, currentEditMode: this.state.edit_mode })));
 	    };
 	    return Topology;
 	}(React.Component));
@@ -21504,11 +21545,11 @@
 	    Toolbar.prototype.render = function () {
 	        return (React.createElement("div", { id: "toolbar" },
 	            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "add_node", value: "增加节点", seat: "toolbar" }),
-	            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "edit_node", value: "编辑节点", seat: "toolbar" }),
+	            React.createElement(FuncBtn, { isEditNodePanelVisible: this.props.isEditNodePanelVisible, toggleEditNodePanelVisible: this.props.toggleEditNodePanelVisible, changeEditMode: this.props.changeEditMode, name: "edit_node", value: "编辑节点", seat: "toolbar" }),
 	            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "add_edge", value: "增加连接", seat: "toolbar" }),
 	            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "edit_edge", value: "编辑连接", seat: "toolbar" }),
 	            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "delete_selected", value: "删除元素", seat: "toolbar" }),
-	            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "layout", value: "预设布局", seat: "toolbar" })));
+	            React.createElement(FuncBtn, { isLayoutPanelVisible: this.props.isLayoutPanelVisible, toggleLayoutPanelVisible: this.props.toggleLayoutPanelVisible, changeEditMode: this.props.changeEditMode, name: "layout", value: "预设布局", seat: "toolbar" })));
 	    };
 	    return Toolbar;
 	}(React.Component));
@@ -21516,19 +21557,27 @@
 	var FuncBtn = (function (_super) {
 	    __extends(FuncBtn, _super);
 	    function FuncBtn(props, context) {
-	        return _super.call(this, props, context) || this;
+	        var _this = _super.call(this, props, context) || this;
+	        _this.handleClick = function () {
+	            _this.props.changeEditMode(_this.props.name);
+	            if (_this.props.toggleEditNodePanelVisible) {
+	                _this.props.toggleEditNodePanelVisible();
+	            }
+	            if (_this.props.toggleLayoutPanelVisible) {
+	                _this.props.toggleLayoutPanelVisible();
+	            }
+	        };
+	        return _this;
 	    }
 	    FuncBtn.prototype.render = function () {
-	        var _this = this;
-	        return (React.createElement("button", { onClick: function () { return _this.props.changeEditMode(_this.props.name); }, name: this.props.name }, this.props.value));
+	        return (React.createElement("button", { onClick: this.handleClick, name: this.props.name }, this.props.value));
 	    };
 	    return FuncBtn;
 	}(React.Component));
 
 
 /***/ },
-/* 180 */,
-/* 181 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21544,38 +21593,28 @@
 	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
-	var vis = __webpack_require__(182);
-	var datagram = __webpack_require__(183);
-	var options_1 = __webpack_require__(184);
 	var Network = (function (_super) {
 	    __extends(Network, _super);
 	    function Network(props, context) {
 	        return _super.call(this, props, context) || this;
 	    }
-	    Network.prototype.componentDidMount = function () {
-	        var data = {
-	            nodes: datagram.nodes,
-	            edges: datagram.edges
-	        };
-	        this.network = new vis.Network(document.getElementById('showcase'), data, options_1.options);
-	    };
 	    Network.prototype.componentDidUpdate = function () {
 	        switch (this.props.currentEditMode) {
 	            case "add_node":
-	                this.network.addNodeMode();
+	                this.props.network.addNodeMode();
 	                break;
 	            case "edit_node":
 	                console.log("open edit node panel");
-	                this.network.editNode();
+	                this.props.network.editNode();
 	                break;
 	            case "add_edge":
-	                this.network.addEdgeMode();
+	                this.props.network.addEdgeMode();
 	                break;
 	            case "edit_edge":
-	                this.network.editEdgeMode();
+	                this.props.network.editEdgeMode();
 	                break;
 	            case "delete_selected":
-	                this.network.deleteSelected();
+	                this.props.network.deleteSelected();
 	                break;
 	            case "layout":
 	                console.log("open layout panel");
@@ -21594,7 +21633,7 @@
 
 
 /***/ },
-/* 182 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -73938,12 +73977,12 @@
 	;
 
 /***/ },
-/* 183 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
-	var vis = __webpack_require__(182);
+	var vis = __webpack_require__(181);
 	exports.nodes = new vis.DataSet([{
 	        id: 1,
 	        label: 'alpha-1',
@@ -74042,7 +74081,7 @@
 
 
 /***/ },
-/* 184 */
+/* 183 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -74134,7 +74173,7 @@
 
 
 /***/ },
-/* 185 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -74150,7 +74189,7 @@
 	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
-	var $ = __webpack_require__(187);
+	var $ = __webpack_require__(185);
 	var Console = (function (_super) {
 	    __extends(Console, _super);
 	    function Console(props, context) {
@@ -74163,7 +74202,7 @@
 	            case "add_node":
 	                return (React.createElement(PopMessage, { id: "pop_message", message: "增加新节点: 在空白处左键单击" }));
 	            case "edit_node":
-	                return (React.createElement(EditNodePanel, null));
+	                return (React.createElement(EditNodePanel, { isEditNodePanelVisible: this.props.isEditNodePanelVisible, toggleEditNodePanelVisible: this.props.toggleEditNodePanelVisible }));
 	            case "add_edge":
 	                return (React.createElement(PopMessage, { id: "pop_message", message: "增加连接: 从一个节点拖拽到另一个节点" }));
 	            case "edit_edge":
@@ -74171,7 +74210,7 @@
 	            case "delete_selected":
 	                return (React.createElement(PopMessage, { id: "pop_message", message: "选中的元素已经被删除" }));
 	            case "layout":
-	                return (React.createElement(LayoutPanel, null));
+	                return (React.createElement(LayoutPanel, { isLayoutPanelVisible: this.props.isLayoutPanelVisible, toggleLayoutPanelVisible: this.props.toggleLayoutPanelVisible }));
 	            default:
 	                return (React.createElement("div", { id: "console" }));
 	        }
@@ -74208,13 +74247,17 @@
 	        return _super.call(this, props, context) || this;
 	    }
 	    EditNodePanel.prototype.render = function () {
-	        return (React.createElement("div", { id: "console" },
+	        var _this = this;
+	        var style = {
+	            display: this.props.isEditNodePanelVisible ? "table" : "none"
+	        };
+	        return (React.createElement("div", { id: "console", style: style },
 	            React.createElement("span", null, "\u8282\u70B9\u6807\u7B7E: "),
 	            React.createElement("input", { type: "textarea", size: 30 }),
 	            React.createElement("span", null, "\u8282\u70B9\u56FE\u5F62: "),
 	            React.createElement("input", { type: "textarea", size: 30, placeholder: "ellipse/circle/box/url" }),
-	            React.createElement("button", null, "\u786E\u8BA4"),
-	            React.createElement("button", null, "\u53D6\u6D88")));
+	            React.createElement("button", { onClick: function () { return _this.props.toggleEditNodePanelVisible(); } }, "\u786E\u8BA4"),
+	            React.createElement("button", { onClick: function () { return _this.props.toggleEditNodePanelVisible(); } }, "\u53D6\u6D88")));
 	    };
 	    return EditNodePanel;
 	}(React.Component));
@@ -74224,22 +74267,27 @@
 	        return _super.call(this, props, context) || this;
 	    }
 	    LayoutPanel.prototype.render = function () {
-	        return (React.createElement("div", { id: "console" },
+	        var _this = this;
+	        var style = {
+	            display: this.props.isLayoutPanelVisible ? "table" : "none"
+	        };
+	        return (React.createElement("div", { id: "console", style: style },
 	            React.createElement("span", null, "\u5E03\u5C40\u7C7B\u578B: "),
 	            React.createElement("select", null,
 	                React.createElement("option", { value: "default" }, "\u9ED8\u8BA4\u5E03\u5C40"),
 	                React.createElement("option", { value: "LR" }, "\u4ECE\u5DE6\u81F3\u53F3"),
 	                React.createElement("option", { value: "RL" }, "\u4ECE\u53F3\u81F3\u5DE6"),
 	                React.createElement("option", { value: "UD" }, "\u4ECE\u4E0A\u81F3\u4E0B"),
-	                React.createElement("option", { value: "DU" }, "\u4ECE\u4E0B\u81F3\u4E0A"))));
+	                React.createElement("option", { value: "DU" }, "\u4ECE\u4E0B\u81F3\u4E0A")),
+	            React.createElement("button", { onClick: function () { return _this.props.toggleLayoutPanelVisible(); } }, "\u786E\u8BA4"),
+	            React.createElement("button", { onClick: function () { return _this.props.toggleLayoutPanelVisible(); } }, "\u53D6\u6D88")));
 	    };
 	    return LayoutPanel;
 	}(React.Component));
 
 
 /***/ },
-/* 186 */,
-/* 187 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -84498,7 +84546,7 @@
 
 
 /***/ },
-/* 188 */
+/* 186 */
 /***/ function(module, exports) {
 
 	"use strict";

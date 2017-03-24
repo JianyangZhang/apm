@@ -6,6 +6,7 @@ export class Console extends React.Component<any, any> {
     constructor(props, context) {
         super(props, context);
     }
+
     render() {
         switch (this.props.currentEditMode) {
             case "none":
@@ -13,7 +14,7 @@ export class Console extends React.Component<any, any> {
             case "add_node":
                 return (<PopMessage id="pop_message" message="增加新节点: 在空白处左键单击" />);
             case "edit_node":
-                return (<EditNodePanel />);
+                return (<EditNodePanel isEditNodePanelVisible={this.props.isEditNodePanelVisible} toggleEditNodePanelVisible={this.props.toggleEditNodePanelVisible} />);
             case "add_edge":
                 return (<PopMessage id="pop_message" message="增加连接: 从一个节点拖拽到另一个节点" />);
             case "edit_edge":
@@ -21,7 +22,7 @@ export class Console extends React.Component<any, any> {
             case "delete_selected":
                 return (<PopMessage id="pop_message" message="选中的元素已经被删除" />);
             case "layout":
-                return (<LayoutPanel />);
+                return (<LayoutPanel isLayoutPanelVisible={this.props.isLayoutPanelVisible} toggleLayoutPanelVisible={this.props.toggleLayoutPanelVisible} />);
             default:
                 return (<div id="console"></div>);
         }
@@ -56,14 +57,17 @@ class EditNodePanel extends React.Component<any, any> {
     }
 
     render() {
+        let style = {
+            display: this.props.isEditNodePanelVisible ? "table" : "none"
+        }
         return (
-            <div id="console">
+            <div id="console" style={style}>
                 <span>节点标签: </span>
                 <input type="textarea" size={30} />
                 <span>节点图形: </span>
                 <input type="textarea" size={30} placeholder={"ellipse/circle/box/url"} />
-                <button>确认</button>
-                <button>取消</button>
+                <button onClick={() => this.props.toggleEditNodePanelVisible()}>确认</button>
+                <button onClick={() => this.props.toggleEditNodePanelVisible()}>取消</button>
             </div>
         );
     }
@@ -75,8 +79,12 @@ class LayoutPanel extends React.Component<any, any> {
     }
 
     render() {
+        let style = {
+            display: this.props.isLayoutPanelVisible ? "table" : "none"
+        }
+
         return (
-            <div id="console">
+            <div id="console" style={style}>
                 <span>布局类型: </span>
                 <select>
                     <option value="default">默认布局</option>
@@ -85,6 +93,8 @@ class LayoutPanel extends React.Component<any, any> {
                     <option value="UD">从上至下</option>
                     <option value="DU">从下至上</option>
                 </select>
+                <button onClick={() => this.props.toggleLayoutPanelVisible()}>确认</button>
+                <button onClick={() => this.props.toggleLayoutPanelVisible()}>取消</button>
             </div>
         );
     }
