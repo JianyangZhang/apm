@@ -21436,23 +21436,17 @@
 	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
-	var vis = __webpack_require__(179);
-	var dataset = __webpack_require__(180);
-	var options_1 = __webpack_require__(181);
-	var Toolbar_1 = __webpack_require__(182);
-	var Network_1 = __webpack_require__(184);
-	var Console_1 = __webpack_require__(185);
-	var RightClickMenu_1 = __webpack_require__(186);
-	var afterFinalMount_1 = __webpack_require__(187);
+	var Toolbar_1 = __webpack_require__(179);
+	var Network_1 = __webpack_require__(180);
+	var Console_1 = __webpack_require__(184);
+	var RightClickMenu_1 = __webpack_require__(185);
+	var afterFinalMount_1 = __webpack_require__(186);
 	var Topology = (function (_super) {
 	    __extends(Topology, _super);
 	    function Topology(props, context) {
 	        var _this = _super.call(this, props, context) || this;
 	        _this.initState = function () {
 	            return {
-	                network: _this.network,
-	                dataset: _this.dataset,
-	                options: _this.options,
 	                edit_mode: "none",
 	                isEditNodePanelVisible: false,
 	                isLayoutPanelVisible: false
@@ -21487,27 +21481,26 @@
 	                });
 	            }
 	        };
-	        _this.dataset = {
-	            nodes: dataset.nodes,
-	            edges: dataset.edges
-	        };
-	        _this.options = options_1.options;
 	        _this.state = _this.initState();
+	        _this.menuItems = [
+	            { text: "增加节点", callback: function () { _this.setState({ edit_mode: "add_node" }); } },
+	            { text: "编辑节点", callback: function () { _this.setState({ edit_mode: "edit_node" }); _this.toggleEditNodePanelVisible(); } },
+	            { text: "增加连接", callback: function () { _this.setState({ edit_mode: "add_edge" }); } },
+	            { text: "编辑连接", callback: function () { _this.setState({ edit_mode: "edit_edge" }); } },
+	            { text: "删除元素", callback: function () { _this.setState({ edit_mode: "delete_selected" }); } },
+	            { text: "改变布局", callback: function () { _this.setState({ edit_mode: "layout" }); _this.toggleLayoutPanelVisible(); } },
+	        ];
 	        return _this;
 	    }
 	    Topology.prototype.componentDidMount = function () {
-	        this.network = new vis.Network(document.getElementById('network'), this.state.dataset, this.state.options);
-	        this.setState({
-	            network: this.network
-	        });
 	        afterFinalMount_1.afterFinalMount();
 	    };
 	    Topology.prototype.render = function () {
 	        return (React.createElement("div", { id: "main" },
-	            React.createElement(Toolbar_1.Toolbar, { isEditNodePanelVisible: this.state.isEditNodePanelVisible, toggleEditNodePanelVisible: this.toggleEditNodePanelVisible, isLayoutPanelVisible: this.state.isLayoutPanelVisible, toggleLayoutPanelVisible: this.toggleLayoutPanelVisible, changeEditMode: this.changeEditMode }),
-	            React.createElement(Network_1.Network, { network: this.state.network, dataset: this.state.dataset, currentEditMode: this.state.edit_mode }),
-	            React.createElement(Console_1.Console, { isEditNodePanelVisible: this.state.isEditNodePanelVisible, toggleEditNodePanelVisible: this.toggleEditNodePanelVisible, isLayoutPanelVisible: this.state.isLayoutPanelVisible, toggleLayoutPanelVisible: this.toggleLayoutPanelVisible, currentEditMode: this.state.edit_mode }),
-	            React.createElement(RightClickMenu_1.RightClickMenu, { isEditNodePanelVisible: this.state.isEditNodePanelVisible, toggleEditNodePanelVisible: this.toggleEditNodePanelVisible, isLayoutPanelVisible: this.state.isLayoutPanelVisible, toggleLayoutPanelVisible: this.toggleLayoutPanelVisible, changeEditMode: this.changeEditMode })));
+	            React.createElement(Toolbar_1.Toolbar, { items: this.menuItems }),
+	            React.createElement(Network_1.Network, { currentEditMode: this.state.edit_mode }),
+	            React.createElement(Console_1.Console, { currentEditMode: this.state.edit_mode, isEditNodePanelVisible: this.state.isEditNodePanelVisible, toggleEditNodePanelVisible: this.toggleEditNodePanelVisible, isLayoutPanelVisible: this.state.isLayoutPanelVisible, toggleLayoutPanelVisible: this.toggleLayoutPanelVisible }),
+	            React.createElement(RightClickMenu_1.RightClickMenu, { items: this.menuItems })));
 	    };
 	    return Topology;
 	}(React.Component));
@@ -21517,6 +21510,243 @@
 
 /***/ },
 /* 179 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || (function () {
+	    var extendStatics = Object.setPrototypeOf ||
+	        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+	        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+	    return function (d, b) {
+	        extendStatics(d, b);
+	        function __() { this.constructor = d; }
+	        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	    };
+	})();
+	Object.defineProperty(exports, "__esModule", { value: true });
+	var React = __webpack_require__(1);
+	var Toolbar = (function (_super) {
+	    __extends(Toolbar, _super);
+	    function Toolbar(props, context) {
+	        var _this = _super.call(this, props, context) || this;
+	        _this.initState = function () {
+	            return {
+	                isLocked: false,
+	            };
+	        };
+	        _this.state = _this.initState();
+	        return _this;
+	    }
+	    Toolbar.prototype.render = function () {
+	        return (React.createElement("div", { id: "toolbar" }, this.props.items.map(function (item, index) {
+	            return (React.createElement("button", { key: index, onClick: item.callback }, item.text));
+	        })));
+	    };
+	    return Toolbar;
+	}(React.Component));
+	exports.Toolbar = Toolbar;
+
+
+/***/ },
+/* 180 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || (function () {
+	    var extendStatics = Object.setPrototypeOf ||
+	        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+	        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+	    return function (d, b) {
+	        extendStatics(d, b);
+	        function __() { this.constructor = d; }
+	        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	    };
+	})();
+	Object.defineProperty(exports, "__esModule", { value: true });
+	var React = __webpack_require__(1);
+	var vis = __webpack_require__(181);
+	var dataset = __webpack_require__(182);
+	var options_1 = __webpack_require__(183);
+	var Network = (function (_super) {
+	    __extends(Network, _super);
+	    function Network(props, context) {
+	        return _super.call(this, props, context) || this;
+	    }
+	    Network.prototype.componentDidMount = function () {
+	        this.dataset = {
+	            nodes: dataset.nodes,
+	            edges: dataset.edges
+	        };
+	        this.options = options_1.options;
+	        this.network = new vis.Network(document.getElementById('network'), this.dataset, this.options);
+	    };
+	    Network.prototype.componentDidUpdate = function () {
+	        var nodes = this.dataset.nodes;
+	        var selected_node_id = this.network.getSelectedNodes()[0];
+	        var selected_node_label = nodes.get(selected_node_id).label;
+	        var updateOptions = {};
+	        switch (this.props.currentEditMode) {
+	            case "add_node":
+	                this.network.addNodeMode();
+	                break;
+	            case "edit_node":
+	                if (typeof (selected_node_label) == "undefined") {
+	                    $("#edit_node_label").val("没有节点被选中！");
+	                    $("#edit_node_label").prop('disabled', true);
+	                    $("#edit_node_shape").prop('disabled', true);
+	                    $("#edit_node_confirm").prop('disabled', true);
+	                }
+	                else {
+	                    $("#edit_node_label").prop('disabled', false);
+	                    $("#edit_node_shape").prop('disabled', false);
+	                    $("#edit_node_confirm").prop('disabled', false);
+	                    $("#edit_node_label").val(selected_node_label);
+	                    $("#edit_node_confirm").on("click", function () {
+	                        this.network.editNode();
+	                    });
+	                }
+	                break;
+	            case "add_edge":
+	                this.network.addEdgeMode();
+	                break;
+	            case "edit_edge":
+	                this.network.editEdgeMode();
+	                break;
+	            case "delete_selected":
+	                this.network.deleteSelected();
+	                break;
+	            case "layout":
+	                $("#layout_confirm").on("click", function () {
+	                    switch ($("#layout_selector").val()) {
+	                        case "UD":
+	                            updateOptions = {
+	                                layout: {
+	                                    hierarchical: {
+	                                        enabled: true,
+	                                        direction: "UD",
+	                                        sortMethod: "directed",
+	                                        nodeSpacing: 200,
+	                                        edgeMinimization: true
+	                                    }
+	                                },
+	                                edges: {
+	                                    smooth: {
+	                                        enabled: true,
+	                                        type: "cubicBezier",
+	                                        forceDirection: "vertical",
+	                                        roundness: 0.5
+	                                    }
+	                                }
+	                            };
+	                            this.network.setOptions(updateOptions);
+	                            break;
+	                        case "LR":
+	                            updateOptions = {
+	                                layout: {
+	                                    hierarchical: {
+	                                        enabled: true,
+	                                        direction: "LR",
+	                                        sortMethod: "directed",
+	                                        nodeSpacing: 100,
+	                                        edgeMinimization: true
+	                                    }
+	                                },
+	                                edges: {
+	                                    smooth: {
+	                                        enabled: true,
+	                                        type: "cubicBezier",
+	                                        forceDirection: "horizontal",
+	                                        roundness: 0.5
+	                                    }
+	                                }
+	                            };
+	                            this.network.setOptions(updateOptions);
+	                            break;
+	                        case "RL":
+	                            updateOptions = {
+	                                layout: {
+	                                    hierarchical: {
+	                                        enabled: true,
+	                                        direction: "RL",
+	                                        sortMethod: "directed",
+	                                        nodeSpacing: 100,
+	                                        edgeMinimization: true
+	                                    }
+	                                },
+	                                edges: {
+	                                    smooth: {
+	                                        enabled: true,
+	                                        type: "cubicBezier",
+	                                        forceDirection: "horizontal",
+	                                        roundness: 0.5
+	                                    }
+	                                }
+	                            };
+	                            this.network.setOptions(updateOptions);
+	                            break;
+	                        case "DU":
+	                            updateOptions = {
+	                                layout: {
+	                                    hierarchical: {
+	                                        enabled: true,
+	                                        direction: "DU",
+	                                        sortMethod: "directed",
+	                                        nodeSpacing: 200,
+	                                        edgeMinimization: true
+	                                    }
+	                                },
+	                                edges: {
+	                                    smooth: {
+	                                        enabled: true,
+	                                        type: "cubicBezier",
+	                                        forceDirection: "vertical",
+	                                        roundness: 0.5
+	                                    }
+	                                }
+	                            };
+	                            this.network.setOptions(updateOptions);
+	                            break;
+	                        case "default":
+	                            var updateOptions = {
+	                                layout: {
+	                                    hierarchical: {
+	                                        enabled: false,
+	                                        direction: "LR",
+	                                        sortMethod: "directed",
+	                                        nodeSpacing: 100,
+	                                        edgeMinimization: true
+	                                    }
+	                                },
+	                                edges: {
+	                                    smooth: {
+	                                        enabled: true,
+	                                        type: "cubicBezier",
+	                                        forceDirection: "horizontal",
+	                                        roundness: 0.5
+	                                    }
+	                                }
+	                            };
+	                            this.network.setOptions(updateOptions);
+	                            break;
+	                        default:
+	                            break;
+	                    }
+	                });
+	                break;
+	            default:
+	                break;
+	        }
+	    };
+	    Network.prototype.render = function () {
+	        return (React.createElement("div", { id: "network" }));
+	    };
+	    return Network;
+	}(React.Component));
+	exports.Network = Network;
+
+
+/***/ },
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -73860,12 +74090,12 @@
 	;
 
 /***/ },
-/* 180 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
-	var vis = __webpack_require__(179);
+	var vis = __webpack_require__(181);
 	exports.nodes = new vis.DataSet([{
 	        id: 1,
 	        label: 'alpha-1',
@@ -73964,7 +74194,7 @@
 
 
 /***/ },
-/* 181 */
+/* 183 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -74062,281 +74292,7 @@
 
 
 /***/ },
-/* 182 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || (function () {
-	    var extendStatics = Object.setPrototypeOf ||
-	        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-	        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-	    return function (d, b) {
-	        extendStatics(d, b);
-	        function __() { this.constructor = d; }
-	        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	    };
-	})();
-	Object.defineProperty(exports, "__esModule", { value: true });
-	var React = __webpack_require__(1);
-	var FuncBtn_1 = __webpack_require__(183);
-	var Toolbar = (function (_super) {
-	    __extends(Toolbar, _super);
-	    function Toolbar(props, context) {
-	        var _this = _super.call(this, props, context) || this;
-	        _this.initState = function () {
-	            return {
-	                isLocked: false,
-	            };
-	        };
-	        _this.state = _this.initState();
-	        return _this;
-	    }
-	    Toolbar.prototype.render = function () {
-	        return (React.createElement("div", { id: "toolbar" },
-	            React.createElement(FuncBtn_1.FuncBtn, { changeEditMode: this.props.changeEditMode, name: "add_node", value: "增加节点", seat: "toolbar" }),
-	            React.createElement(FuncBtn_1.FuncBtn, { isEditNodePanelVisible: this.props.isEditNodePanelVisible, toggleEditNodePanelVisible: this.props.toggleEditNodePanelVisible, changeEditMode: this.props.changeEditMode, name: "edit_node", value: "编辑节点", seat: "toolbar" }),
-	            React.createElement(FuncBtn_1.FuncBtn, { changeEditMode: this.props.changeEditMode, name: "add_edge", value: "增加连接", seat: "toolbar" }),
-	            React.createElement(FuncBtn_1.FuncBtn, { changeEditMode: this.props.changeEditMode, name: "edit_edge", value: "编辑连接", seat: "toolbar" }),
-	            React.createElement(FuncBtn_1.FuncBtn, { changeEditMode: this.props.changeEditMode, name: "delete_selected", value: "删除元素", seat: "toolbar" }),
-	            React.createElement(FuncBtn_1.FuncBtn, { isLayoutPanelVisible: this.props.isLayoutPanelVisible, toggleLayoutPanelVisible: this.props.toggleLayoutPanelVisible, changeEditMode: this.props.changeEditMode, name: "layout", value: "预设布局", seat: "toolbar" })));
-	    };
-	    return Toolbar;
-	}(React.Component));
-	exports.Toolbar = Toolbar;
-
-
-/***/ },
-/* 183 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || (function () {
-	    var extendStatics = Object.setPrototypeOf ||
-	        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-	        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-	    return function (d, b) {
-	        extendStatics(d, b);
-	        function __() { this.constructor = d; }
-	        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	    };
-	})();
-	Object.defineProperty(exports, "__esModule", { value: true });
-	var React = __webpack_require__(1);
-	var FuncBtn = (function (_super) {
-	    __extends(FuncBtn, _super);
-	    function FuncBtn(props, context) {
-	        var _this = _super.call(this, props, context) || this;
-	        _this.handleClick = function () {
-	            if (_this.props.changeEditMode) {
-	                _this.props.changeEditMode(_this.props.name);
-	            }
-	            if (_this.props.toggleEditNodePanelVisible) {
-	                _this.props.toggleEditNodePanelVisible();
-	            }
-	            if (_this.props.toggleLayoutPanelVisible) {
-	                _this.props.toggleLayoutPanelVisible();
-	            }
-	        };
-	        return _this;
-	    }
-	    FuncBtn.prototype.render = function () {
-	        return (React.createElement("button", { onClick: this.handleClick, name: this.props.name }, this.props.value));
-	    };
-	    return FuncBtn;
-	}(React.Component));
-	exports.FuncBtn = FuncBtn;
-
-
-/***/ },
 /* 184 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || (function () {
-	    var extendStatics = Object.setPrototypeOf ||
-	        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-	        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-	    return function (d, b) {
-	        extendStatics(d, b);
-	        function __() { this.constructor = d; }
-	        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	    };
-	})();
-	Object.defineProperty(exports, "__esModule", { value: true });
-	var React = __webpack_require__(1);
-	var Network = (function (_super) {
-	    __extends(Network, _super);
-	    function Network(props, context) {
-	        return _super.call(this, props, context) || this;
-	    }
-	    Network.prototype.componentDidUpdate = function () {
-	        var network = this.props.network;
-	        var nodes = this.props.dataset.nodes;
-	        var selected_node_id = network.getSelectedNodes()[0];
-	        var selected_node_label = nodes.get(selected_node_id).label;
-	        var updateOptions = {};
-	        switch (this.props.currentEditMode) {
-	            case "add_node":
-	                network.addNodeMode();
-	                break;
-	            case "edit_node":
-	                if (typeof (selected_node_label) == "undefined") {
-	                    $("#edit_node_label").val("没有节点被选中！");
-	                    $("#edit_node_label").prop('disabled', true);
-	                    $("#edit_node_shape").prop('disabled', true);
-	                    $("#edit_node_confirm").prop('disabled', true);
-	                }
-	                else {
-	                    $("#edit_node_label").prop('disabled', false);
-	                    $("#edit_node_shape").prop('disabled', false);
-	                    $("#edit_node_confirm").prop('disabled', false);
-	                    $("#edit_node_label").val(selected_node_label);
-	                    $("#edit_node_confirm").on("click", function () {
-	                        network.editNode();
-	                    });
-	                }
-	                break;
-	            case "add_edge":
-	                network.addEdgeMode();
-	                break;
-	            case "edit_edge":
-	                network.editEdgeMode();
-	                break;
-	            case "delete_selected":
-	                network.deleteSelected();
-	                break;
-	            case "layout":
-	                $("#layout_confirm").on("click", function () {
-	                    switch ($("#layout_selector").val()) {
-	                        case "UD":
-	                            updateOptions = {
-	                                layout: {
-	                                    hierarchical: {
-	                                        enabled: true,
-	                                        direction: "UD",
-	                                        sortMethod: "directed",
-	                                        nodeSpacing: 200,
-	                                        edgeMinimization: true
-	                                    }
-	                                },
-	                                edges: {
-	                                    smooth: {
-	                                        enabled: true,
-	                                        type: "cubicBezier",
-	                                        forceDirection: "vertical",
-	                                        roundness: 0.5
-	                                    }
-	                                }
-	                            };
-	                            network.setOptions(updateOptions);
-	                            break;
-	                        case "LR":
-	                            updateOptions = {
-	                                layout: {
-	                                    hierarchical: {
-	                                        enabled: true,
-	                                        direction: "LR",
-	                                        sortMethod: "directed",
-	                                        nodeSpacing: 100,
-	                                        edgeMinimization: true
-	                                    }
-	                                },
-	                                edges: {
-	                                    smooth: {
-	                                        enabled: true,
-	                                        type: "cubicBezier",
-	                                        forceDirection: "horizontal",
-	                                        roundness: 0.5
-	                                    }
-	                                }
-	                            };
-	                            network.setOptions(updateOptions);
-	                            break;
-	                        case "RL":
-	                            updateOptions = {
-	                                layout: {
-	                                    hierarchical: {
-	                                        enabled: true,
-	                                        direction: "RL",
-	                                        sortMethod: "directed",
-	                                        nodeSpacing: 100,
-	                                        edgeMinimization: true
-	                                    }
-	                                },
-	                                edges: {
-	                                    smooth: {
-	                                        enabled: true,
-	                                        type: "cubicBezier",
-	                                        forceDirection: "horizontal",
-	                                        roundness: 0.5
-	                                    }
-	                                }
-	                            };
-	                            network.setOptions(updateOptions);
-	                            break;
-	                        case "DU":
-	                            updateOptions = {
-	                                layout: {
-	                                    hierarchical: {
-	                                        enabled: true,
-	                                        direction: "DU",
-	                                        sortMethod: "directed",
-	                                        nodeSpacing: 200,
-	                                        edgeMinimization: true
-	                                    }
-	                                },
-	                                edges: {
-	                                    smooth: {
-	                                        enabled: true,
-	                                        type: "cubicBezier",
-	                                        forceDirection: "vertical",
-	                                        roundness: 0.5
-	                                    }
-	                                }
-	                            };
-	                            network.setOptions(updateOptions);
-	                            break;
-	                        case "default":
-	                            var updateOptions = {
-	                                layout: {
-	                                    hierarchical: {
-	                                        enabled: false,
-	                                        direction: "LR",
-	                                        sortMethod: "directed",
-	                                        nodeSpacing: 100,
-	                                        edgeMinimization: true
-	                                    }
-	                                },
-	                                edges: {
-	                                    smooth: {
-	                                        enabled: true,
-	                                        type: "cubicBezier",
-	                                        forceDirection: "horizontal",
-	                                        roundness: 0.5
-	                                    }
-	                                }
-	                            };
-	                            network.setOptions(updateOptions);
-	                            break;
-	                        default:
-	                            break;
-	                    }
-	                });
-	                break;
-	            default:
-	                break;
-	        }
-	    };
-	    Network.prototype.render = function () {
-	        return (React.createElement("div", { id: "network" }));
-	    };
-	    return Network;
-	}(React.Component));
-	exports.Network = Network;
-
-
-/***/ },
-/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -74459,7 +74415,7 @@
 
 
 /***/ },
-/* 186 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -74475,7 +74431,6 @@
 	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
-	var FuncBtn_1 = __webpack_require__(183);
 	var RightClickMenu = (function (_super) {
 	    __extends(RightClickMenu, _super);
 	    function RightClickMenu(props, context) {
@@ -74485,18 +74440,11 @@
 	        var style = {
 	            position: "absolute"
 	        };
-	        return (React.createElement("div", { id: "right_click_menu", style: style },
-	            React.createElement(FuncBtn_1.FuncBtn, { changeEditMode: this.props.changeEditMode, name: "add_node", value: "增加节点", seat: "toolbar" }),
-	            React.createElement("br", null),
-	            React.createElement(FuncBtn_1.FuncBtn, { changeEditMode: this.props.changeEditMode, isEditNodePanelVisible: this.props.isEditNodePanelVisible, toggleEditNodePanelVisible: this.props.toggleEditNodePanelVisible, name: "edit_node", value: "编辑节点", seat: "toolbar" }),
-	            React.createElement("br", null),
-	            React.createElement(FuncBtn_1.FuncBtn, { changeEditMode: this.props.changeEditMode, name: "add_edge", value: "增加连接", seat: "toolbar" }),
-	            React.createElement("br", null),
-	            React.createElement(FuncBtn_1.FuncBtn, { changeEditMode: this.props.changeEditMode, name: "edit_edge", value: "编辑连接", seat: "toolbar" }),
-	            React.createElement("br", null),
-	            React.createElement(FuncBtn_1.FuncBtn, { changeEditMode: this.props.changeEditMode, name: "delete_selected", value: "删除元素", seat: "toolbar" }),
-	            React.createElement("br", null),
-	            React.createElement(FuncBtn_1.FuncBtn, { changeEditMode: this.props.changeEditMode, isLayoutPanelVisible: this.props.isLayoutPanelVisible, toggleLayoutPanelVisible: this.props.toggleLayoutPanelVisible, name: "layout", value: "预设布局", seat: "toolbar" })));
+	        return (React.createElement("div", { id: "right_click_menu", style: style }, this.props.items.map(function (item, index) {
+	            return (React.createElement("div", { key: index },
+	                React.createElement("button", { onClick: item.callback }, item.text),
+	                React.createElement("br", null)));
+	        })));
 	    };
 	    return RightClickMenu;
 	}(React.Component));
@@ -74504,7 +74452,7 @@
 
 
 /***/ },
-/* 187 */
+/* 186 */
 /***/ function(module, exports) {
 
 	"use strict";

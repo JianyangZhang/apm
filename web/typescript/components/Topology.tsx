@@ -1,8 +1,5 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import * as vis from "vis";
-import * as dataset from "../constants/dataset";
-import { options } from "../constants/options";
 import { Toolbar } from "./ui/Toolbar";
 import { Network } from "./ui/Network";
 import { Console } from "./ui/Console";
@@ -10,24 +7,21 @@ import { RightClickMenu } from "./ui/RightClickMenu";
 import { afterFinalMount } from "../constants/afterFinalMount";
 
 export class Topology extends React.Component<any, any> {
-    private network: any;
-    private dataset: any;
-    private options: any;
+    private menuItems: any;
     constructor(props, context) {
         super(props, context);
-        this.dataset = {
-            nodes: dataset.nodes,
-            edges: dataset.edges
-        };
-        this.options = options;
         this.state = this.initState();
+        this.menuItems = [
+            { text: "增加节点", callback: () => { this.setState({ edit_mode: "add_node" }); } },
+            { text: "编辑节点", callback: () => { this.setState({ edit_mode: "edit_node" }); this.toggleEditNodePanelVisible(); } },
+            { text: "增加连接", callback: () => { this.setState({ edit_mode: "add_edge" }); } },
+            { text: "编辑连接", callback: () => { this.setState({ edit_mode: "edit_edge" }); } },
+            { text: "删除元素", callback: () => { this.setState({ edit_mode: "delete_selected" }); } },
+            { text: "改变布局", callback: () => { this.setState({ edit_mode: "layout" }); this.toggleLayoutPanelVisible(); } },
+        ]
     }
-
     private initState = () => {
         return {
-            network: this.network,
-            dataset: this.dataset,
-            options: this.options,
             edit_mode: "none",
             isEditNodePanelVisible: false,
             isLayoutPanelVisible: false
@@ -35,10 +29,6 @@ export class Topology extends React.Component<any, any> {
     }
 
     componentDidMount() {
-        this.network = new vis.Network(document.getElementById('network'), this.state.dataset, this.state.options);
-        this.setState({
-            network: this.network
-        });
         afterFinalMount();
     }
 
@@ -75,25 +65,16 @@ export class Topology extends React.Component<any, any> {
     render() {
         return (
             <div id="main">
-                <Toolbar
-                    isEditNodePanelVisible={this.state.isEditNodePanelVisible}
-                    toggleEditNodePanelVisible={this.toggleEditNodePanelVisible}
-                    isLayoutPanelVisible={this.state.isLayoutPanelVisible}
-                    toggleLayoutPanelVisible={this.toggleLayoutPanelVisible}
-                    changeEditMode={this.changeEditMode} />
-                <Network network={this.state.network} dataset={this.state.dataset} currentEditMode={this.state.edit_mode} />
+                <Toolbar items={this.menuItems} />
+                <Network currentEditMode={this.state.edit_mode} />
                 <Console
+                    currentEditMode={this.state.edit_mode}
                     isEditNodePanelVisible={this.state.isEditNodePanelVisible}
                     toggleEditNodePanelVisible={this.toggleEditNodePanelVisible}
                     isLayoutPanelVisible={this.state.isLayoutPanelVisible}
                     toggleLayoutPanelVisible={this.toggleLayoutPanelVisible}
-                    currentEditMode={this.state.edit_mode} />
-                <RightClickMenu
-                    isEditNodePanelVisible={this.state.isEditNodePanelVisible}
-                    toggleEditNodePanelVisible={this.toggleEditNodePanelVisible}
-                    isLayoutPanelVisible={this.state.isLayoutPanelVisible}
-                    toggleLayoutPanelVisible={this.toggleLayoutPanelVisible}
-                    changeEditMode={this.changeEditMode} />
+                     />
+                <RightClickMenu items={this.menuItems} />
             </div>
         )
     }

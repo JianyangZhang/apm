@@ -1,19 +1,32 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import * as vis from "vis";
+import * as dataset from "../../constants/dataset";
+import { options } from "../../constants/options";
 
 export class Network extends React.Component<any, any> {
+    private network: any;
+    private dataset: any;
+    private options: any;
     constructor(props, context) {
         super(props, context);
     }
+    componentDidMount() {
+        this.dataset = {
+            nodes: dataset.nodes,
+            edges: dataset.edges
+        };
+        this.options = options;
+        this.network = new vis.Network(document.getElementById('network'), this.dataset, this.options);
+    }
     componentDidUpdate() {
-        const network = this.props.network;
-        const nodes = this.props.dataset.nodes;
-        const selected_node_id = network.getSelectedNodes()[0];
+        const nodes = this.dataset.nodes;
+        const selected_node_id = this.network.getSelectedNodes()[0];
         const selected_node_label = nodes.get(selected_node_id).label;
         let updateOptions = {};
         switch (this.props.currentEditMode) {
             case "add_node":
-                network.addNodeMode();
+                this.network.addNodeMode();
                 break;
             case "edit_node":
                 if (typeof (selected_node_label) == "undefined") {
@@ -27,18 +40,18 @@ export class Network extends React.Component<any, any> {
                     $("#edit_node_confirm").prop('disabled', false);
                     $("#edit_node_label").val(selected_node_label);
                     $("#edit_node_confirm").on("click", function() {
-                        network.editNode();
+                        this.network.editNode();
                     });
                 }
                 break;
             case "add_edge":
-                network.addEdgeMode();
+                this.network.addEdgeMode();
                 break;
             case "edit_edge":
-                network.editEdgeMode();
+                this.network.editEdgeMode();
                 break;
             case "delete_selected":
-                network.deleteSelected();
+                this.network.deleteSelected();
                 break;
             case "layout":
                 $("#layout_confirm").on("click", function() {
@@ -63,7 +76,7 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            network.setOptions(updateOptions);
+                            this.network.setOptions(updateOptions);
                             break;
                         case "LR":
                             updateOptions = {
@@ -85,7 +98,7 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            network.setOptions(updateOptions);
+                            this.network.setOptions(updateOptions);
                             break;
                         case "RL":
                             updateOptions = {
@@ -107,7 +120,7 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            network.setOptions(updateOptions);
+                            this.network.setOptions(updateOptions);
                             break;
                         case "DU":
                             updateOptions = {
@@ -129,7 +142,7 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            network.setOptions(updateOptions);
+                            this.network.setOptions(updateOptions);
                             break;
                         case "default":
                             var updateOptions = {
@@ -151,7 +164,7 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            network.setOptions(updateOptions);
+                            this.network.setOptions(updateOptions);
                             break;
                         default:
                             break;
