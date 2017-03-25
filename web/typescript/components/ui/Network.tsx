@@ -6,34 +6,165 @@ export class Network extends React.Component<any, any> {
         super(props, context);
     }
     componentDidUpdate() {
+        const network = this.props.network;
+        const nodes = this.props.dataset.nodes;
+        const selected_node_id = network.getSelectedNodes()[0];
+        const selected_node_label = nodes.get(selected_node_id).label;
+        let updateOptions = {};
         switch (this.props.currentEditMode) {
             case "add_node":
-                this.props.network.addNodeMode();
+                network.addNodeMode();
                 break;
             case "edit_node":
-                console.log("open edit node panel");
-                this.props.network.editNode();
+                if (typeof (selected_node_label) == "undefined") {
+                    $("#edit_node_label").val("没有节点被选中！");
+                    $("#edit_node_label").prop('disabled', true);
+                    $("#edit_node_shape").prop('disabled', true);
+                    $("#edit_node_confirm").prop('disabled', true);
+                } else {
+                    $("#edit_node_label").prop('disabled', false);
+                    $("#edit_node_shape").prop('disabled', false);
+                    $("#edit_node_confirm").prop('disabled', false);
+                    $("#edit_node_label").val(selected_node_label);
+                    $("#edit_node_confirm").on("click", function() {
+                        network.editNode();
+                    });
+                }
                 break;
             case "add_edge":
-                this.props.network.addEdgeMode();
+                network.addEdgeMode();
                 break;
             case "edit_edge":
-                this.props.network.editEdgeMode();
+                network.editEdgeMode();
                 break;
             case "delete_selected":
-                this.props.network.deleteSelected();
+                network.deleteSelected();
                 break;
             case "layout":
-                console.log("open layout panel");
+                $("#layout_confirm").on("click", function() {
+                    switch ($("#layout_selector").val()) {
+                        case "UD":
+                            updateOptions = {
+                                layout: {
+                                    hierarchical: {
+                                        enabled: true,
+                                        direction: "UD",
+                                        sortMethod: "directed",
+                                        nodeSpacing: 200,
+                                        edgeMinimization: true
+                                    }
+                                },
+                                edges: {
+                                    smooth: {
+                                        enabled: true,
+                                        type: "cubicBezier",
+                                        forceDirection: "vertical",
+                                        roundness: 0.5
+                                    }
+                                }
+                            }
+                            network.setOptions(updateOptions);
+                            break;
+                        case "LR":
+                            updateOptions = {
+                                layout: {
+                                    hierarchical: {
+                                        enabled: true,
+                                        direction: "LR",
+                                        sortMethod: "directed",
+                                        nodeSpacing: 100,
+                                        edgeMinimization: true
+                                    }
+                                },
+                                edges: {
+                                    smooth: {
+                                        enabled: true,
+                                        type: "cubicBezier",
+                                        forceDirection: "horizontal",
+                                        roundness: 0.5
+                                    }
+                                }
+                            }
+                            network.setOptions(updateOptions);
+                            break;
+                        case "RL":
+                            updateOptions = {
+                                layout: {
+                                    hierarchical: {
+                                        enabled: true,
+                                        direction: "RL",
+                                        sortMethod: "directed",
+                                        nodeSpacing: 100,
+                                        edgeMinimization: true
+                                    }
+                                },
+                                edges: {
+                                    smooth: {
+                                        enabled: true,
+                                        type: "cubicBezier",
+                                        forceDirection: "horizontal",
+                                        roundness: 0.5
+                                    }
+                                }
+                            }
+                            network.setOptions(updateOptions);
+                            break;
+                        case "DU":
+                            updateOptions = {
+                                layout: {
+                                    hierarchical: {
+                                        enabled: true,
+                                        direction: "DU",
+                                        sortMethod: "directed",
+                                        nodeSpacing: 200,
+                                        edgeMinimization: true
+                                    }
+                                },
+                                edges: {
+                                    smooth: {
+                                        enabled: true,
+                                        type: "cubicBezier",
+                                        forceDirection: "vertical",
+                                        roundness: 0.5
+                                    }
+                                }
+                            }
+                            network.setOptions(updateOptions);
+                            break;
+                        case "default":
+                            var updateOptions = {
+                                layout: {
+                                    hierarchical: {
+                                        enabled: false,
+                                        direction: "LR",
+                                        sortMethod: "directed",
+                                        nodeSpacing: 100,
+                                        edgeMinimization: true
+                                    }
+                                },
+                                edges: {
+                                    smooth: {
+                                        enabled: true,
+                                        type: "cubicBezier",
+                                        forceDirection: "horizontal",
+                                        roundness: 0.5
+                                    }
+                                }
+                            }
+                            network.setOptions(updateOptions);
+                            break;
+                        default:
+                            break;
+                    }
+                });
                 break;
             default:
-                console.log("none");
                 break;
         }
     }
     render() {
         return (
-            <div id="showcase">
+            <div id="network">
             </div>
         )
     }

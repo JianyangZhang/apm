@@ -14,12 +14,12 @@ button {
     border-top-width: 0;
 }
 
-#showcase {
+#network {
     width: 100%;
     height: 600px;
 }
 
-#console {
+#edit_node_panel, #layout_panel, #pop_message {
     position: absolute;
     text-align: center;
     display: table;
@@ -29,11 +29,7 @@ button {
 }
 
 #pop_message {
-    position: absolute;
-    text-align: center;
-    background-color: #F0F0F0;
-    left: 2px;
-    bottom: 2px;
+    display: block;
 }
 
 #toolbar {

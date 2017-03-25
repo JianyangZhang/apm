@@ -1,6 +1,6 @@
 import * as vis from "vis";
 
-export var nodes = new vis.DataSet([{
+export const nodes = new vis.DataSet([{
     id: 1,
     label: 'alpha-1',
     image: './img/user.png',

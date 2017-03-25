@@ -61,7 +61,12 @@ export var options = {
             callback(nodeInfo);
         },
         editNode: function(nodeInfo, callback) {
-            
+            nodeInfo.label = $("#edit_node_label").val();
+            if ($("#edit_node_shape").val() != "stay_the_same") {
+                nodeInfo.shape = $("#edit_node_shape").val();
+            }
+            nodeInfo.shadow = false; // vis.js glitch
+            callback(nodeInfo);
         },
         addEdge: true,
         editEdge: true,

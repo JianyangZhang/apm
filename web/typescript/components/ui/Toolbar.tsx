@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { FuncBtn } from "./FuncBtn";
 
 export class Toolbar extends React.Component<any, any> {
     constructor(props, context) {
@@ -23,28 +24,6 @@ export class Toolbar extends React.Component<any, any> {
                 <FuncBtn changeEditMode={this.props.changeEditMode} name="delete_selected" value="删除元素" seat="toolbar" />
                 <FuncBtn isLayoutPanelVisible={this.props.isLayoutPanelVisible} toggleLayoutPanelVisible={this.props.toggleLayoutPanelVisible} changeEditMode={this.props.changeEditMode} name="layout" value="预设布局" seat="toolbar" />
             </div>
-        )
-    }
-}
-
-class FuncBtn extends React.Component<any, any> {
-    constructor(props, context) {
-        super(props, context);
-    }
-    handleClick = () => {
-        this.props.changeEditMode(this.props.name);
-        if (this.props.toggleEditNodePanelVisible) {
-            this.props.toggleEditNodePanelVisible();
-        }
-        if (this.props.toggleLayoutPanelVisible) {
-            this.props.toggleLayoutPanelVisible();
-        }
-    }
-    render() {
-        return (
-            <button onClick={this.handleClick} name={this.props.name}>
-                {this.props.value}
-            </button>
         )
     }
 }
