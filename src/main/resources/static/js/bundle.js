@@ -21448,47 +21448,16 @@
 	        _this.initState = function () {
 	            return {
 	                edit_mode: "none",
-	                isEditNodePanelVisible: false,
-	                isLayoutPanelVisible: false
 	            };
-	        };
-	        _this.changeEditMode = function (current_mode) {
-	            _this.setState({
-	                edit_mode: current_mode
-	            });
-	        };
-	        _this.toggleEditNodePanelVisible = function () {
-	            if (_this.state.isEditNodePanelVisible) {
-	                _this.setState({
-	                    isEditNodePanelVisible: false
-	                });
-	            }
-	            else {
-	                _this.setState({
-	                    isEditNodePanelVisible: true
-	                });
-	            }
-	        };
-	        _this.toggleLayoutPanelVisible = function () {
-	            if (_this.state.isLayoutPanelVisible) {
-	                _this.setState({
-	                    isLayoutPanelVisible: false
-	                });
-	            }
-	            else {
-	                _this.setState({
-	                    isLayoutPanelVisible: true
-	                });
-	            }
 	        };
 	        _this.state = _this.initState();
 	        _this.menuItems = [
 	            { text: "增加节点", callback: function () { _this.setState({ edit_mode: "add_node" }); } },
-	            { text: "编辑节点", callback: function () { _this.setState({ edit_mode: "edit_node" }); _this.toggleEditNodePanelVisible(); } },
+	            { text: "编辑节点", callback: function () { _this.setState({ edit_mode: "edit_node" }); } },
 	            { text: "增加连接", callback: function () { _this.setState({ edit_mode: "add_edge" }); } },
 	            { text: "编辑连接", callback: function () { _this.setState({ edit_mode: "edit_edge" }); } },
 	            { text: "删除元素", callback: function () { _this.setState({ edit_mode: "delete_selected" }); } },
-	            { text: "改变布局", callback: function () { _this.setState({ edit_mode: "layout" }); _this.toggleLayoutPanelVisible(); } },
+	            { text: "改变布局", callback: function () { _this.setState({ edit_mode: "layout" }); } },
 	        ];
 	        return _this;
 	    }
@@ -21498,8 +21467,8 @@
 	    Topology.prototype.render = function () {
 	        return (React.createElement("div", { id: "main" },
 	            React.createElement(Toolbar_1.Toolbar, { items: this.menuItems }),
-	            React.createElement(Network_1.Network, { currentEditMode: this.state.edit_mode }),
-	            React.createElement(Console_1.Console, { currentEditMode: this.state.edit_mode, isEditNodePanelVisible: this.state.isEditNodePanelVisible, toggleEditNodePanelVisible: this.toggleEditNodePanelVisible, isLayoutPanelVisible: this.state.isLayoutPanelVisible, toggleLayoutPanelVisible: this.toggleLayoutPanelVisible }),
+	            React.createElement(Network_1.Network, { editMode: this.state.edit_mode }),
+	            React.createElement(Console_1.Console, { editMode: this.state.edit_mode }),
 	            React.createElement(RightClickMenu_1.RightClickMenu, { items: this.menuItems })));
 	    };
 	    return Topology;
@@ -21581,13 +21550,14 @@
 	        this.network = new vis.Network(document.getElementById('network'), this.dataset, this.options);
 	    };
 	    Network.prototype.componentDidUpdate = function () {
+	        var network = this.network;
 	        var nodes = this.dataset.nodes;
-	        var selected_node_id = this.network.getSelectedNodes()[0];
+	        var selected_node_id = network.getSelectedNodes()[0];
 	        var selected_node_label = nodes.get(selected_node_id).label;
 	        var updateOptions = {};
-	        switch (this.props.currentEditMode) {
+	        switch (this.props.editMode) {
 	            case "add_node":
-	                this.network.addNodeMode();
+	                network.addNodeMode();
 	                break;
 	            case "edit_node":
 	                if (typeof (selected_node_label) == "undefined") {
@@ -21602,18 +21572,18 @@
 	                    $("#edit_node_confirm").prop('disabled', false);
 	                    $("#edit_node_label").val(selected_node_label);
 	                    $("#edit_node_confirm").on("click", function () {
-	                        this.network.editNode();
+	                        network.editNode();
 	                    });
 	                }
 	                break;
 	            case "add_edge":
-	                this.network.addEdgeMode();
+	                network.addEdgeMode();
 	                break;
 	            case "edit_edge":
-	                this.network.editEdgeMode();
+	                network.editEdgeMode();
 	                break;
 	            case "delete_selected":
-	                this.network.deleteSelected();
+	                network.deleteSelected();
 	                break;
 	            case "layout":
 	                $("#layout_confirm").on("click", function () {
@@ -21638,7 +21608,7 @@
 	                                    }
 	                                }
 	                            };
-	                            this.network.setOptions(updateOptions);
+	                            network.setOptions(updateOptions);
 	                            break;
 	                        case "LR":
 	                            updateOptions = {
@@ -21660,7 +21630,7 @@
 	                                    }
 	                                }
 	                            };
-	                            this.network.setOptions(updateOptions);
+	                            network.setOptions(updateOptions);
 	                            break;
 	                        case "RL":
 	                            updateOptions = {
@@ -21682,7 +21652,7 @@
 	                                    }
 	                                }
 	                            };
-	                            this.network.setOptions(updateOptions);
+	                            network.setOptions(updateOptions);
 	                            break;
 	                        case "DU":
 	                            updateOptions = {
@@ -21704,7 +21674,7 @@
 	                                    }
 	                                }
 	                            };
-	                            this.network.setOptions(updateOptions);
+	                            network.setOptions(updateOptions);
 	                            break;
 	                        case "default":
 	                            var updateOptions = {
@@ -21726,7 +21696,7 @@
 	                                    }
 	                                }
 	                            };
-	                            this.network.setOptions(updateOptions);
+	                            network.setOptions(updateOptions);
 	                            break;
 	                        default:
 	                            break;
@@ -74311,19 +74281,47 @@
 	var Console = (function (_super) {
 	    __extends(Console, _super);
 	    function Console(props, context) {
-	        return _super.call(this, props, context) || this;
+	        var _this = _super.call(this, props, context) || this;
+	        _this.initState = function () {
+	            return {
+	                // checker的作用:
+	                // 1.当用户不断点击工具栏的同一个按钮时, checker可以切换控制台隐藏显示状态
+	                // 2.当用户点击控制台的"确认"或"取消"按钮后, 控制台就被隐藏了, checker可以让工具栏的按钮再次显示控制台
+	                editNodePanelChecker: true,
+	                layoutPanelChecker: true,
+	                // 真正决定控制台隐藏显示的state
+	                isEditNodePanelVisible: false,
+	                isLayoutPanelVisible: false
+	            };
+	        };
+	        _this.toggleEditNodePanelVisibility = function () {
+	            _this.state.editNodePanelChecker = false;
+	            _this.state.isEditNodePanelVisible ?
+	                _this.setState({ isEditNodePanelVisible: false }) : _this.setState({ isEditNodePanelVisible: true });
+	        };
+	        _this.toggleLayoutPanelVisibility = function () {
+	            _this.state.layoutPanelChecker = false;
+	            _this.state.isLayoutPanelVisible ?
+	                _this.setState({ isLayoutPanelVisible: false }) : _this.setState({ isLayoutPanelVisible: true });
+	        };
+	        _this.state = _this.initState();
+	        return _this;
 	    }
+	    Console.prototype.componentDidUpdate = function () {
+	        this.state.editNodePanelChecker = true;
+	        this.state.layoutPanelChecker = true;
+	    };
 	    Console.prototype.render = function () {
-	        switch (this.props.currentEditMode) {
+	        switch (this.props.editMode) {
 	            case "none":
 	                return (React.createElement(PopMessage, { message: "" }));
 	            case "add_node":
 	                return (React.createElement(PopMessage, { message: "增加新节点: 在空白处左键单击" }));
 	            case "edit_node":
-	                if (this.props.isLayoutPanelVisible) {
-	                    this.props.toggleLayoutPanelVisible();
+	                if (this.state.editNodePanelChecker) {
+	                    this.state.isEditNodePanelVisible = !this.state.isEditNodePanelVisible;
 	                }
-	                return (React.createElement(EditNodePanel, { isEditNodePanelVisible: this.props.isEditNodePanelVisible, toggleEditNodePanelVisible: this.props.toggleEditNodePanelVisible }));
+	                return (React.createElement(EditNodePanel, { isVisible: this.state.isEditNodePanelVisible, toggleVisibility: this.toggleEditNodePanelVisibility }));
 	            case "add_edge":
 	                return (React.createElement(PopMessage, { message: "增加连接: 从一个节点拖拽到另一个节点" }));
 	            case "edit_edge":
@@ -74331,10 +74329,10 @@
 	            case "delete_selected":
 	                return (React.createElement(PopMessage, { message: "选中的元素已经被删除" }));
 	            case "layout":
-	                if (this.props.isEditNodePanelVisible) {
-	                    this.props.toggleEditNodePanelVisible();
+	                if (this.state.layoutPanelChecker) {
+	                    this.state.isLayoutPanelVisible = !this.state.isLayoutPanelVisible;
 	                }
-	                return (React.createElement(LayoutPanel, { isLayoutPanelVisible: this.props.isLayoutPanelVisible, toggleLayoutPanelVisible: this.props.toggleLayoutPanelVisible }));
+	                return (React.createElement(LayoutPanel, { isVisible: this.state.isLayoutPanelVisible, toggleVisibility: this.toggleLayoutPanelVisibility }));
 	            default:
 	                return (React.createElement("div", { id: "console" }));
 	        }
@@ -74371,9 +74369,8 @@
 	        return _super.call(this, props, context) || this;
 	    }
 	    EditNodePanel.prototype.render = function () {
-	        var _this = this;
 	        var style = {
-	            display: this.props.isEditNodePanelVisible ? "table" : "none"
+	            display: this.props.isVisible ? "table" : "none"
 	        };
 	        return (React.createElement("div", { id: "edit_node_panel", style: style },
 	            React.createElement("span", null, "\u8282\u70B9\u6807\u7B7E: "),
@@ -74384,8 +74381,8 @@
 	                React.createElement("option", { value: "ellipse" }, "ellipse"),
 	                React.createElement("option", { value: "circle" }, "circle"),
 	                React.createElement("option", { value: "box" }, "box")),
-	            React.createElement("button", { id: "edit_node_confirm", onClick: function () { return _this.props.toggleEditNodePanelVisible(); } }, "\u786E\u8BA4"),
-	            React.createElement("button", { id: "edit_node_cancel", onClick: function () { return _this.props.toggleEditNodePanelVisible(); } }, "\u53D6\u6D88")));
+	            React.createElement("button", { id: "edit_node_confirm", onClick: this.props.toggleVisibility }, "\u786E\u8BA4"),
+	            React.createElement("button", { id: "edit_node_cancel", onClick: this.props.toggleVisibility }, "\u53D6\u6D88")));
 	    };
 	    return EditNodePanel;
 	}(React.Component));
@@ -74395,9 +74392,8 @@
 	        return _super.call(this, props, context) || this;
 	    }
 	    LayoutPanel.prototype.render = function () {
-	        var _this = this;
 	        var style = {
-	            display: this.props.isLayoutPanelVisible ? "table" : "none"
+	            display: this.props.isVisible ? "table" : "none"
 	        };
 	        return (React.createElement("div", { id: "layout_panel", style: style },
 	            React.createElement("span", null, "\u5E03\u5C40\u7C7B\u578B: "),
@@ -74407,8 +74403,8 @@
 	                React.createElement("option", { value: "RL" }, "\u4ECE\u53F3\u81F3\u5DE6"),
 	                React.createElement("option", { value: "UD" }, "\u4ECE\u4E0A\u81F3\u4E0B"),
 	                React.createElement("option", { value: "DU" }, "\u4ECE\u4E0B\u81F3\u4E0A")),
-	            React.createElement("button", { id: "layout_confirm", onClick: function () { return _this.props.toggleLayoutPanelVisible(); } }, "\u786E\u8BA4"),
-	            React.createElement("button", { id: "layout_cancel", onClick: function () { return _this.props.toggleLayoutPanelVisible(); } }, "\u53D6\u6D88")));
+	            React.createElement("button", { id: "layout_confirm", onClick: this.props.toggleVisibility }, "\u786E\u8BA4"),
+	            React.createElement("button", { id: "layout_cancel", onClick: this.props.toggleVisibility }, "\u53D6\u6D88")));
 	    };
 	    return LayoutPanel;
 	}(React.Component));

@@ -20,13 +20,14 @@ export class Network extends React.Component<any, any> {
         this.network = new vis.Network(document.getElementById('network'), this.dataset, this.options);
     }
     componentDidUpdate() {
+        const network = this.network;
         const nodes = this.dataset.nodes;
-        const selected_node_id = this.network.getSelectedNodes()[0];
+        const selected_node_id = network.getSelectedNodes()[0];
         const selected_node_label = nodes.get(selected_node_id).label;
         let updateOptions = {};
-        switch (this.props.currentEditMode) {
+        switch (this.props.editMode) {
             case "add_node":
-                this.network.addNodeMode();
+                network.addNodeMode();
                 break;
             case "edit_node":
                 if (typeof (selected_node_label) == "undefined") {
@@ -40,18 +41,18 @@ export class Network extends React.Component<any, any> {
                     $("#edit_node_confirm").prop('disabled', false);
                     $("#edit_node_label").val(selected_node_label);
                     $("#edit_node_confirm").on("click", function() {
-                        this.network.editNode();
+                        network.editNode();
                     });
                 }
                 break;
             case "add_edge":
-                this.network.addEdgeMode();
+                network.addEdgeMode();
                 break;
             case "edit_edge":
-                this.network.editEdgeMode();
+                network.editEdgeMode();
                 break;
             case "delete_selected":
-                this.network.deleteSelected();
+                network.deleteSelected();
                 break;
             case "layout":
                 $("#layout_confirm").on("click", function() {
@@ -76,7 +77,7 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            this.network.setOptions(updateOptions);
+                            network.setOptions(updateOptions);
                             break;
                         case "LR":
                             updateOptions = {
@@ -98,7 +99,7 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            this.network.setOptions(updateOptions);
+                            network.setOptions(updateOptions);
                             break;
                         case "RL":
                             updateOptions = {
@@ -120,7 +121,7 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            this.network.setOptions(updateOptions);
+                            network.setOptions(updateOptions);
                             break;
                         case "DU":
                             updateOptions = {
@@ -142,7 +143,7 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            this.network.setOptions(updateOptions);
+                            network.setOptions(updateOptions);
                             break;
                         case "default":
                             var updateOptions = {
@@ -164,7 +165,7 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            this.network.setOptions(updateOptions);
+                            network.setOptions(updateOptions);
                             break;
                         default:
                             break;
