@@ -77,7 +77,6 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            network.setOptions(updateOptions);
                             break;
                         case "LR":
                             updateOptions = {
@@ -99,7 +98,6 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            network.setOptions(updateOptions);
                             break;
                         case "RL":
                             updateOptions = {
@@ -121,7 +119,6 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            network.setOptions(updateOptions);
                             break;
                         case "DU":
                             updateOptions = {
@@ -143,7 +140,6 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            network.setOptions(updateOptions);
                             break;
                         case "default":
                             var updateOptions = {
@@ -165,11 +161,11 @@ export class Network extends React.Component<any, any> {
                                     }
                                 }
                             }
-                            network.setOptions(updateOptions);
                             break;
                         default:
                             break;
                     }
+                    network.setOptions(updateOptions);
                 });
                 break;
             default:

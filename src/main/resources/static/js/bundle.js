@@ -21440,6 +21440,7 @@
 	var Network_1 = __webpack_require__(180);
 	var Console_1 = __webpack_require__(184);
 	var RightClickMenu_1 = __webpack_require__(185);
+	var didUpdate_1 = __webpack_require__(188);
 	var afterFinalMount_1 = __webpack_require__(186);
 	var Topology = (function (_super) {
 	    __extends(Topology, _super);
@@ -21448,25 +21449,30 @@
 	        _this.initState = function () {
 	            return {
 	                edit_mode: "none",
+	                isLocked: false
 	            };
 	        };
 	        _this.state = _this.initState();
 	        _this.menuItems = [
-	            { text: "增加节点", callback: function () { _this.setState({ edit_mode: "add_node" }); } },
-	            { text: "编辑节点", callback: function () { _this.setState({ edit_mode: "edit_node" }); } },
-	            { text: "增加连接", callback: function () { _this.setState({ edit_mode: "add_edge" }); } },
-	            { text: "编辑连接", callback: function () { _this.setState({ edit_mode: "edit_edge" }); } },
-	            { text: "删除元素", callback: function () { _this.setState({ edit_mode: "delete_selected" }); } },
-	            { text: "改变布局", callback: function () { _this.setState({ edit_mode: "layout" }); } },
+	            { text: "增加节点", type: "button", callback: function () { _this.setState({ edit_mode: "add_node" }); } },
+	            { text: "编辑节点", type: "button", callback: function () { _this.setState({ edit_mode: "edit_node" }); } },
+	            { text: "增加连接", type: "button", callback: function () { _this.setState({ edit_mode: "add_edge" }); } },
+	            { text: "编辑连接", type: "button", callback: function () { _this.setState({ edit_mode: "edit_edge" }); } },
+	            { text: "删除元素", type: "button", callback: function () { _this.setState({ edit_mode: "delete_selected" }); } },
+	            { text: "改变布局", type: "button", callback: function () { _this.setState({ edit_mode: "layout" }); } },
+	            { text: "锁定", type: "checkbox", callback: function () { _this.setState({ edit_mode: "none", isLocked: !_this.state.isLocked }); } },
 	        ];
 	        return _this;
 	    }
+	    Topology.prototype.componentDidUpdate = function () {
+	        didUpdate_1.didUpdate(this.state.isLocked);
+	    };
 	    Topology.prototype.componentDidMount = function () {
 	        afterFinalMount_1.afterFinalMount();
 	    };
 	    Topology.prototype.render = function () {
 	        return (React.createElement("div", { id: "main" },
-	            React.createElement(Toolbar_1.Toolbar, { items: this.menuItems }),
+	            React.createElement(Toolbar_1.Toolbar, { items: this.menuItems, isLocked: this.state.isLocked }),
 	            React.createElement(Network_1.Network, { editMode: this.state.edit_mode }),
 	            React.createElement(Console_1.Console, { editMode: this.state.edit_mode }),
 	            React.createElement(RightClickMenu_1.RightClickMenu, { items: this.menuItems })));
@@ -21497,18 +21503,23 @@
 	var Toolbar = (function (_super) {
 	    __extends(Toolbar, _super);
 	    function Toolbar(props, context) {
-	        var _this = _super.call(this, props, context) || this;
-	        _this.initState = function () {
-	            return {
-	                isLocked: false,
-	            };
-	        };
-	        _this.state = _this.initState();
-	        return _this;
+	        return _super.call(this, props, context) || this;
 	    }
 	    Toolbar.prototype.render = function () {
+	        var _this = this;
+	        var inline = {
+	            display: "inline-block"
+	        };
 	        return (React.createElement("div", { id: "toolbar" }, this.props.items.map(function (item, index) {
-	            return (React.createElement("button", { key: index, onClick: item.callback }, item.text));
+	            if (item.type == "button") {
+	                // isLocked属性仅锁定button类型的item
+	                return (React.createElement("button", { key: index, onClick: item.callback, disabled: _this.props.isLocked ? true : false }, item.text));
+	            }
+	            if (item.type == "checkbox") {
+	                return (React.createElement("div", { key: index, style: inline },
+	                    React.createElement("span", null, item.text),
+	                    React.createElement("input", { type: "checkbox", onChange: item.callback })));
+	            }
 	        })));
 	    };
 	    return Toolbar;
@@ -21608,7 +21619,6 @@
 	                                    }
 	                                }
 	                            };
-	                            network.setOptions(updateOptions);
 	                            break;
 	                        case "LR":
 	                            updateOptions = {
@@ -21630,7 +21640,6 @@
 	                                    }
 	                                }
 	                            };
-	                            network.setOptions(updateOptions);
 	                            break;
 	                        case "RL":
 	                            updateOptions = {
@@ -21652,7 +21661,6 @@
 	                                    }
 	                                }
 	                            };
-	                            network.setOptions(updateOptions);
 	                            break;
 	                        case "DU":
 	                            updateOptions = {
@@ -21674,7 +21682,6 @@
 	                                    }
 	                                }
 	                            };
-	                            network.setOptions(updateOptions);
 	                            break;
 	                        case "default":
 	                            var updateOptions = {
@@ -21696,11 +21703,11 @@
 	                                    }
 	                                }
 	                            };
-	                            network.setOptions(updateOptions);
 	                            break;
 	                        default:
 	                            break;
 	                    }
+	                    network.setOptions(updateOptions);
 	                });
 	                break;
 	            default:
@@ -74377,10 +74384,10 @@
 	            React.createElement("input", { id: "edit_node_label", type: "text", size: 30 }),
 	            React.createElement("span", null, "\u8282\u70B9\u56FE\u5F62: "),
 	            React.createElement("select", { id: "edit_node_shape" },
-	                React.createElement("option", { value: "stay_the_same" }, "stay the same"),
-	                React.createElement("option", { value: "ellipse" }, "ellipse"),
-	                React.createElement("option", { value: "circle" }, "circle"),
-	                React.createElement("option", { value: "box" }, "box")),
+	                React.createElement("option", { value: "stay_the_same" }, "\u4FDD\u6301\u539F\u6837"),
+	                React.createElement("option", { value: "ellipse" }, "\u692D\u5706"),
+	                React.createElement("option", { value: "circle" }, "\u5706\u5F62"),
+	                React.createElement("option", { value: "box" }, "\u65B9\u5757")),
 	            React.createElement("button", { id: "edit_node_confirm", onClick: this.props.toggleVisibility }, "\u786E\u8BA4"),
 	            React.createElement("button", { id: "edit_node_cancel", onClick: this.props.toggleVisibility }, "\u53D6\u6D88")));
 	    };
@@ -74437,9 +74444,11 @@
 	            position: "absolute"
 	        };
 	        return (React.createElement("div", { id: "right_click_menu", style: style }, this.props.items.map(function (item, index) {
-	            return (React.createElement("div", { key: index },
-	                React.createElement("button", { onClick: item.callback }, item.text),
-	                React.createElement("br", null)));
+	            if (item.type == "button") {
+	                return (React.createElement("div", { key: index },
+	                    React.createElement("button", { onClick: item.callback }, item.text),
+	                    React.createElement("br", null)));
+	            }
 	        })));
 	    };
 	    return RightClickMenu;
@@ -74454,8 +74463,8 @@
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	function afterFinalMount() {
-	    $("#network").css("height", $(window).height() - 30);
 	    $("#right_click_menu").hide();
+	    $("#network").css("height", $(window).height() - 30);
 	    $("#network").mousedown(function (e) {
 	        if (e.button == 2) {
 	            document.getElementById("network").oncontextmenu = function () {
@@ -74463,14 +74472,43 @@
 	            };
 	            $("#right_click_menu").css("left", e.pageX + 1);
 	            $("#right_click_menu").css("top", e.pageY + 1);
-	            $("#right_click_menu").fadeIn(10);
+	            $("#right_click_menu").show();
 	        }
 	    });
 	    $("body").on("click", function () {
-	        $("#right_click_menu").fadeOut(10);
+	        $("#right_click_menu").hide();
 	    });
 	}
 	exports.afterFinalMount = afterFinalMount;
+
+
+/***/ },
+/* 187 */,
+/* 188 */
+/***/ function(module, exports) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	function didUpdate(isLocked) {
+	    $("#right_click_menu").hide();
+	    $("#network").mousedown(function (e) {
+	        if (e.button == 2 && !isLocked) {
+	            document.getElementById("network").oncontextmenu = function () {
+	                return false;
+	            };
+	            $("#right_click_menu").css("left", e.pageX + 1);
+	            $("#right_click_menu").css("top", e.pageY + 1);
+	            $("#right_click_menu").show();
+	        }
+	        else if (e.button == 2 && isLocked) {
+	            $("#right_click_menu").hide();
+	            document.getElementById("network").oncontextmenu = function () {
+	                return true;
+	            };
+	        }
+	    });
+	}
+	exports.didUpdate = didUpdate;
 
 
 /***/ }

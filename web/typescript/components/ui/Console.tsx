@@ -103,10 +103,10 @@ class EditNodePanel extends React.Component<any, any> {
                 <input id="edit_node_label" type="text" size={30} />
                 <span>节点图形: </span>
                 <select id="edit_node_shape">
-                    <option value="stay_the_same">stay the same</option>
-                    <option value="ellipse">ellipse</option>
-                    <option value="circle">circle</option>
-                    <option value="box">box</option>
+                    <option value="stay_the_same">保持原样</option>
+                    <option value="ellipse">椭圆</option>
+                    <option value="circle">圆形</option>
+                    <option value="box">方块</option>
                 </select>
                 <button id="edit_node_confirm" onClick={this.props.toggleVisibility}>确认</button>
                 <button id="edit_node_cancel" onClick={this.props.toggleVisibility}>取消</button>

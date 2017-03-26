@@ -13,7 +13,9 @@ export class RightClickMenu extends React.Component<any, any> {
             <div id="right_click_menu" style={style}>
                 {
                     this.props.items.map((item, index) => {
-                        return (<div key={index}><button onClick={item.callback}>{item.text}</button><br/></div>)
+                        if (item.type == "button") {
+                            return (<div key={index}><button onClick={item.callback}>{item.text}</button><br/></div>)
+                        }
                     })
                 }
             </div>
