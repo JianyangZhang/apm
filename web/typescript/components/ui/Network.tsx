@@ -6,13 +6,17 @@ import { options } from "../../constants/options";
 export class Network extends React.Component<any, any> {
     private network: any;
     private container: any;
+    private nodes: any;
+    private edges: any;
     private datagram: any;
     private options: any;
     constructor(props, context) {
         super(props, context);
+        this.nodes = new vis.DataSet(this.props.datagram.nodes);
+        this.edges = new vis.DataSet(this.props.datagram.edges);
         this.datagram = {
-            nodes: new vis.DataSet(this.props.datagram.nodes),
-            edges: new vis.DataSet(this.props.datagram.edges)
+            nodes: this.nodes,
+            edges: this.edges
         }
         this.options = options;
     }
@@ -20,11 +24,18 @@ export class Network extends React.Component<any, any> {
         this.container = document.getElementById("network");
         this.network = new vis.Network(this.container, this.datagram, this.options);
     }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (this.props.editMode == "save" && nextProps.editMode == "save") {
+            return false;
+        }
+        return true;
+    }
+
     componentDidUpdate() {
         const network = this.network;
-        const nodes = this.datagram.nodes;
         const selected_node_id = network.getSelectedNodes()[0];
-        const selected_node_label = nodes.get(selected_node_id).label;
+        const selected_node_label = this.nodes.get(selected_node_id).label;
         let updateOptions = {};
         if (this.props.isLocked) {
             updateOptions = {
@@ -33,7 +44,8 @@ export class Network extends React.Component<any, any> {
                     navigationButtons: false,
                     zoomView: false,
                     dragView: false,
-                    dragNodes: false
+                    dragNodes: false,
+                    hover: false
                 }
             };
             network.setOptions(updateOptions);
@@ -45,7 +57,8 @@ export class Network extends React.Component<any, any> {
                     navigationButtons: true,
                     zoomView: true,
                     dragView: true,
-                    dragNodes: true
+                    dragNodes: true,
+                    hover: true
                 }
             };
             network.setOptions(updateOptions);
@@ -194,6 +207,17 @@ export class Network extends React.Component<any, any> {
                     network.setOptions(updateOptions);
                 });
                 break;
+            case "save":
+                const currentDatagram = {
+                    nodes: this.nodes.get(),
+                    edges: this.edges.get()
+                }
+                if (this.props.onSave) {
+                    this.props.onSave(currentDatagram);
+                }
+                console.log(currentDatagram.nodes[0].x);
+                console.log(network.getSeed());
+                break;
             default:
                 break;
         }
@@ -201,7 +225,6 @@ export class Network extends React.Component<any, any> {
     render() {
         return (
             <div>
-                <button onClick={this.props.generateTopology}>生成拓扑图</button>
                 <div id="network">
                 </div>
             </div>

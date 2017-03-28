@@ -11,12 +11,20 @@ export var options = {
         size: 20,
         physics: false,
         shadow: false,
+        labelHighlightBold: true,
+        font: {
+            face: "open sans"
+        },
         color: {
             border: "black",
             background: "white",
             highlight: {
                 border: "#58BB12",
                 background: "#58BB12",
+            },
+            hover: {
+                border: "#00ff00",
+                background: "#ffffff",
             }
         },
         fixed: {
@@ -27,7 +35,8 @@ export var options = {
     edges: {
         color: {
             color: "gray",
-            highlight: "#58BB12"
+            highlight: "#58BB12",
+            hover: "#66ff66"
         },
         arrows: {
             to: {
@@ -87,6 +96,7 @@ export var options = {
         navigationButtons: true,
         zoomView: true,
         dragView: true,
-        dragNodes: true
+        dragNodes: true,
+        hover: true
     }
 };

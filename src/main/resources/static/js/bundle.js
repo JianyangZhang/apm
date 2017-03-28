@@ -51,7 +51,7 @@
 	var redux_1 = __webpack_require__(178);
 	var react_redux_1 = __webpack_require__(199);
 	var topologyReducers_1 = __webpack_require__(216);
-	var Topology_1 = __webpack_require__(219);
+	var Topology_1 = __webpack_require__(218);
 	var store = redux_1.createStore(topologyReducers_1.topologyReducers);
 	ReactDOM.render(React.createElement(react_redux_1.Provider, { store: store },
 	    React.createElement(Topology_1.default, null)), document.getElementById('topology'));
@@ -23691,127 +23691,20 @@
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
-	var datagram_1 = __webpack_require__(218);
+	var datagram_1 = __webpack_require__(228);
 	exports.datagramReducer = function (state, action) {
-	    if (state === void 0) { state = { datagram: { nodes: [], edges: [] } }; }
+	    if (state === void 0) { state = { nodes: [], edges: [] }; }
 	    switch (action.type) {
-	        case "generate_topology":
-	            return {
-	                datagram: datagram_1.datagram
-	            };
+	        case "save_topology":
+	            return action.payload;
 	        default:
-	            return state;
+	            return datagram_1.datagram;
 	    }
 	};
 
 
 /***/ },
 /* 218 */
-/***/ function(module, exports) {
-
-	"use strict";
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.datagram = {
-	    nodes: [{
-	            id: 1,
-	            label: 'alpha-1',
-	            image: './img/user.png',
-	            x: -450,
-	            y: 0
-	        }, {
-	            id: 2,
-	            label: 'bravo-2',
-	            image: './img/user.png',
-	            x: -450,
-	            y: 100
-	        }, {
-	            id: 3,
-	            label: 'charlie-3',
-	            image: './img/user.png',
-	            x: -450,
-	            y: 200
-	        }, {
-	            id: 4,
-	            label: 'delta-4',
-	            image: './img/api.png',
-	            x: -150,
-	            y: -220
-	        }, {
-	            id: 5,
-	            label: 'echo-5',
-	            image: './img/api.png',
-	            x: -150,
-	            y: -50
-	        }, {
-	            id: 6,
-	            label: 'foxtrot-6',
-	            image: './img/api.png',
-	            x: -150,
-	            y: 150
-	        }, {
-	            id: 7,
-	            label: 'golf-7',
-	            image: './img/cloud.png',
-	            x: 150,
-	            y: 20
-	        }, {
-	            id: 8,
-	            label: 'hotel-8',
-	            image: './img/cloud.png',
-	            x: 150,
-	            y: 150
-	        }, {
-	            id: 9,
-	            label: 'india-9',
-	            image: './img/disk.png',
-	            x: 450,
-	            y: 0
-	        }, {
-	            id: 10,
-	            label: 'juliett-10',
-	            image: './img/disk.png',
-	            x: 450,
-	            y: 250
-	        }],
-	    edges: [{
-	            from: 1,
-	            to: 4
-	        }, {
-	            from: 1,
-	            to: 5
-	        }, {
-	            from: 2,
-	            to: 5
-	        }, {
-	            from: 2,
-	            to: 6
-	        }, {
-	            from: 3,
-	            to: 6
-	        }, {
-	            from: 3,
-	            to: 10
-	        }, {
-	            from: 4,
-	            to: 9
-	        }, {
-	            from: 5,
-	            to: 7
-	        }, {
-	            from: 5,
-	            to: 8
-	        }, {
-	            from: 7,
-	            to: 9
-	        }, {
-	            from: 7,
-	            to: 10
-	        }]
-	};
-
-
-/***/ },
-/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23829,13 +23722,13 @@
 	var React = __webpack_require__(1);
 	var redux_1 = __webpack_require__(178);
 	var react_redux_1 = __webpack_require__(199);
-	var topologyActions_1 = __webpack_require__(220);
-	var Toolbar_1 = __webpack_require__(221);
-	var Network_1 = __webpack_require__(222);
-	var Console_1 = __webpack_require__(225);
-	var RightClickMenu_1 = __webpack_require__(226);
-	var didUpdate_1 = __webpack_require__(227);
-	var afterFinalMount_1 = __webpack_require__(228);
+	var topologyActions_1 = __webpack_require__(219);
+	var Toolbar_1 = __webpack_require__(220);
+	var Network_1 = __webpack_require__(221);
+	var Console_1 = __webpack_require__(224);
+	var RightClickMenu_1 = __webpack_require__(225);
+	var didUpdate_1 = __webpack_require__(226);
+	var afterFinalMount_1 = __webpack_require__(227);
 	var Topology = (function (_super) {
 	    __extends(Topology, _super);
 	    function Topology(props, context) {
@@ -23854,6 +23747,7 @@
 	            { text: "编辑连接", type: "button", callback: function () { _this.setState({ edit_mode: "edit_edge" }); } },
 	            { text: "删除元素", type: "button", callback: function () { _this.setState({ edit_mode: "delete_selected" }); } },
 	            { text: "改变布局", type: "button", callback: function () { _this.setState({ edit_mode: "layout" }); } },
+	            { text: "保存拓扑", type: "button", callback: function () { _this.setState({ edit_mode: "save" }); } },
 	            { text: "锁定", type: "checkbox", callback: function () { _this.setState({ edit_mode: "none", isLocked: !_this.state.isLocked }); } },
 	        ];
 	        return _this;
@@ -23867,7 +23761,7 @@
 	    Topology.prototype.render = function () {
 	        return (React.createElement("div", { id: "main" },
 	            React.createElement(Toolbar_1.Toolbar, { items: this.menuItems, isLocked: this.state.isLocked }),
-	            React.createElement(Network_1.Network, { editMode: this.state.edit_mode, isLocked: this.state.isLocked, datagram: this.props.datagram }),
+	            React.createElement(Network_1.Network, { datagram: this.props.datagram, editMode: this.state.edit_mode, onSave: this.props.saveTopology, isLocked: this.state.isLocked }),
 	            React.createElement(Console_1.Console, { editMode: this.state.edit_mode }),
 	            React.createElement(RightClickMenu_1.RightClickMenu, { items: this.menuItems })));
 	    };
@@ -23881,7 +23775,7 @@
 	};
 	var mapDispatchToProps = function (dispatch) {
 	    return redux_1.bindActionCreators({
-	        generateTopology: topologyActions_1.generateTopology
+	        saveTopology: topologyActions_1.saveTopology
 	    }, dispatch);
 	};
 	var TopologyApp = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(Topology);
@@ -23889,17 +23783,13 @@
 
 
 /***/ },
-/* 220 */
+/* 219 */
 /***/ function(module, exports) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.generateTopology = function () {
-	    return {
-	        type: "generate_topology",
-	    };
-	};
 	exports.saveTopology = function (datagram) {
+	    console.log("保存拓扑图...");
 	    return {
 	        type: "save_topology",
 	        payload: datagram
@@ -23908,7 +23798,7 @@
 
 
 /***/ },
-/* 221 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23952,7 +23842,7 @@
 
 
 /***/ },
-/* 222 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23968,15 +23858,17 @@
 	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
-	var vis = __webpack_require__(223);
-	var options_1 = __webpack_require__(224);
+	var vis = __webpack_require__(222);
+	var options_1 = __webpack_require__(223);
 	var Network = (function (_super) {
 	    __extends(Network, _super);
 	    function Network(props, context) {
 	        var _this = _super.call(this, props, context) || this;
+	        _this.nodes = new vis.DataSet(_this.props.datagram.nodes);
+	        _this.edges = new vis.DataSet(_this.props.datagram.edges);
 	        _this.datagram = {
-	            nodes: new vis.DataSet(_this.props.datagram.nodes),
-	            edges: new vis.DataSet(_this.props.datagram.edges)
+	            nodes: _this.nodes,
+	            edges: _this.edges
 	        };
 	        _this.options = options_1.options;
 	        return _this;
@@ -23985,11 +23877,16 @@
 	        this.container = document.getElementById("network");
 	        this.network = new vis.Network(this.container, this.datagram, this.options);
 	    };
+	    Network.prototype.shouldComponentUpdate = function (nextProps, nextState) {
+	        if (this.props.editMode == "save" && nextProps.editMode == "save") {
+	            return false;
+	        }
+	        return true;
+	    };
 	    Network.prototype.componentDidUpdate = function () {
 	        var network = this.network;
-	        var nodes = this.datagram.nodes;
 	        var selected_node_id = network.getSelectedNodes()[0];
-	        var selected_node_label = nodes.get(selected_node_id).label;
+	        var selected_node_label = this.nodes.get(selected_node_id).label;
 	        var updateOptions = {};
 	        if (this.props.isLocked) {
 	            updateOptions = {
@@ -23998,7 +23895,8 @@
 	                    navigationButtons: false,
 	                    zoomView: false,
 	                    dragView: false,
-	                    dragNodes: false
+	                    dragNodes: false,
+	                    hover: false
 	                }
 	            };
 	            network.setOptions(updateOptions);
@@ -24011,7 +23909,8 @@
 	                    navigationButtons: true,
 	                    zoomView: true,
 	                    dragView: true,
-	                    dragNodes: true
+	                    dragNodes: true,
+	                    hover: true
 	                }
 	            };
 	            network.setOptions(updateOptions);
@@ -24160,13 +24059,23 @@
 	                    network.setOptions(updateOptions);
 	                });
 	                break;
+	            case "save":
+	                var currentDatagram = {
+	                    nodes: this.nodes.get(),
+	                    edges: this.edges.get()
+	                };
+	                if (this.props.onSave) {
+	                    this.props.onSave(currentDatagram);
+	                }
+	                console.log(currentDatagram.nodes[0].x);
+	                console.log(network.getSeed());
+	                break;
 	            default:
 	                break;
 	        }
 	    };
 	    Network.prototype.render = function () {
 	        return (React.createElement("div", null,
-	            React.createElement("button", { onClick: this.props.generateTopology }, "\u751F\u6210\u62D3\u6251\u56FE"),
 	            React.createElement("div", { id: "network" })));
 	    };
 	    return Network;
@@ -24175,7 +24084,7 @@
 
 
 /***/ },
-/* 223 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -76519,7 +76428,7 @@
 	;
 
 /***/ },
-/* 224 */
+/* 223 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -76535,12 +76444,20 @@
 	        size: 20,
 	        physics: false,
 	        shadow: false,
+	        labelHighlightBold: true,
+	        font: {
+	            face: "open sans"
+	        },
 	        color: {
 	            border: "black",
 	            background: "white",
 	            highlight: {
 	                border: "#58BB12",
 	                background: "#58BB12",
+	            },
+	            hover: {
+	                border: "#00ff00",
+	                background: "#ffffff",
 	            }
 	        },
 	        fixed: {
@@ -76551,7 +76468,8 @@
 	    edges: {
 	        color: {
 	            color: "gray",
-	            highlight: "#58BB12"
+	            highlight: "#58BB12",
+	            hover: "#66ff66"
 	        },
 	        arrows: {
 	            to: {
@@ -76611,13 +76529,14 @@
 	        navigationButtons: true,
 	        zoomView: true,
 	        dragView: true,
-	        dragNodes: true
+	        dragNodes: true,
+	        hover: true
 	    }
 	};
 
 
 /***/ },
-/* 225 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -76766,7 +76685,7 @@
 
 
 /***/ },
-/* 226 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -76805,7 +76724,7 @@
 
 
 /***/ },
-/* 227 */
+/* 226 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -76833,7 +76752,7 @@
 
 
 /***/ },
-/* 228 */
+/* 227 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -76856,6 +76775,111 @@
 	    });
 	}
 	exports.afterFinalMount = afterFinalMount;
+
+
+/***/ },
+/* 228 */
+/***/ function(module, exports) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.datagram = {
+	    nodes: [{
+	            id: 1,
+	            label: 'alpha-1',
+	            image: './img/user.png',
+	            x: -450,
+	            y: 0
+	        }, {
+	            id: 2,
+	            label: 'bravo-2',
+	            image: './img/user.png',
+	            x: -450,
+	            y: 100
+	        }, {
+	            id: 3,
+	            label: 'charlie-3',
+	            image: './img/user.png',
+	            x: -450,
+	            y: 200
+	        }, {
+	            id: 4,
+	            label: 'delta-4',
+	            image: './img/api.png',
+	            x: -150,
+	            y: -220
+	        }, {
+	            id: 5,
+	            label: 'echo-5',
+	            image: './img/api.png',
+	            x: -150,
+	            y: -50
+	        }, {
+	            id: 6,
+	            label: 'foxtrot-6',
+	            image: './img/api.png',
+	            x: -150,
+	            y: 150
+	        }, {
+	            id: 7,
+	            label: 'golf-7',
+	            image: './img/cloud.png',
+	            x: 150,
+	            y: 20
+	        }, {
+	            id: 8,
+	            label: 'hotel-8',
+	            image: './img/cloud.png',
+	            x: 150,
+	            y: 150
+	        }, {
+	            id: 9,
+	            label: 'india-9',
+	            image: './img/disk.png',
+	            x: 450,
+	            y: 0
+	        }, {
+	            id: 10,
+	            label: 'juliett-10',
+	            image: './img/disk.png',
+	            x: 450,
+	            y: 250
+	        }],
+	    edges: [{
+	            from: 1,
+	            to: 4
+	        }, {
+	            from: 1,
+	            to: 5
+	        }, {
+	            from: 2,
+	            to: 5
+	        }, {
+	            from: 2,
+	            to: 6
+	        }, {
+	            from: 3,
+	            to: 6
+	        }, {
+	            from: 3,
+	            to: 10
+	        }, {
+	            from: 4,
+	            to: 9
+	        }, {
+	            from: 5,
+	            to: 7
+	        }, {
+	            from: 5,
+	            to: 8
+	        }, {
+	            from: 7,
+	            to: 9
+	        }, {
+	            from: 7,
+	            to: 10
+	        }]
+	};
 
 
 /***/ }

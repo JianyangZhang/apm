@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { generateTopology } from "../actions/topologyActions";
+import { saveTopology } from "../actions/topologyActions";
 import { Toolbar } from "./ui/Toolbar";
 import { Network } from "./ui/Network";
 import { Console } from "./ui/Console";
@@ -22,6 +22,7 @@ class Topology extends React.Component<any, any> {
             { text: "编辑连接", type: "button", callback: () => { this.setState({ edit_mode: "edit_edge" }); } },
             { text: "删除元素", type: "button", callback: () => { this.setState({ edit_mode: "delete_selected" }); } },
             { text: "改变布局", type: "button", callback: () => { this.setState({ edit_mode: "layout" }); } },
+            { text: "保存拓扑", type: "button", callback: () => { this.setState({ edit_mode: "save" }); } },
             { text: "锁定", type: "checkbox", callback: () => { this.setState({ edit_mode: "none", isLocked: !this.state.isLocked }); } },
         ]
     }
@@ -45,7 +46,11 @@ class Topology extends React.Component<any, any> {
         return (
             <div id="main">
                 <Toolbar items={this.menuItems} isLocked={this.state.isLocked} />
-                <Network editMode={this.state.edit_mode} isLocked={this.state.isLocked} datagram={this.props.datagram} />
+                <Network
+                    datagram={this.props.datagram}
+                    editMode={this.state.edit_mode}
+                    onSave={this.props.saveTopology}
+                    isLocked={this.state.isLocked} />
                 <Console editMode={this.state.edit_mode} />
                 <RightClickMenu items={this.menuItems} />
             </div>
@@ -62,7 +67,7 @@ const mapStateToProps = (storeState) => {
 
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
-        generateTopology: generateTopology
+        saveTopology: saveTopology
     }, dispatch);
 }
 
