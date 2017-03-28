@@ -1,10 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function afterFinalMount() {
+function didUpdate(isLocked) {
     $("#right_click_menu").hide();
-    $("#network").css("height", $(window).height() - 30);
     $("#network").mousedown(function (e) {
-        if (e.button == 2) {
+        if (e.button == 2 && !isLocked) {
             document.getElementById("network").oncontextmenu = function () {
                 return false;
             };
@@ -12,10 +11,13 @@ function afterFinalMount() {
             $("#right_click_menu").css("top", e.pageY + 1);
             $("#right_click_menu").show();
         }
-    });
-    $("body").on("click", function () {
-        $("#right_click_menu").hide();
+        else if (e.button == 2 && isLocked) {
+            $("#right_click_menu").hide();
+            document.getElementById("network").oncontextmenu = function () {
+                return true;
+            };
+        }
     });
 }
-exports.afterFinalMount = afterFinalMount;
-//# sourceMappingURL=afterFinalMount.js.map
+exports.didUpdate = didUpdate;
+//# sourceMappingURL=didUpdate.js.map

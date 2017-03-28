@@ -1,5 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { generateTopology } from "../actions/topologyActions";
 import { Toolbar } from "./ui/Toolbar";
 import { Network } from "./ui/Network";
 import { Console } from "./ui/Console";
@@ -7,9 +10,8 @@ import { RightClickMenu } from "./ui/RightClickMenu";
 import { didUpdate } from "../constants/didUpdate";
 import { afterFinalMount } from "../constants/afterFinalMount";
 
-export class Topology extends React.Component<any, any> {
+class Topology extends React.Component<any, any> {
     private menuItems: any;
-
     constructor(props, context) {
         super(props, context);
         this.state = this.initState();
@@ -43,10 +45,27 @@ export class Topology extends React.Component<any, any> {
         return (
             <div id="main">
                 <Toolbar items={this.menuItems} isLocked={this.state.isLocked} />
-                <Network editMode={this.state.edit_mode} />
+                <Network editMode={this.state.edit_mode} isLocked={this.state.isLocked} datagram={this.props.datagram} />
                 <Console editMode={this.state.edit_mode} />
                 <RightClickMenu items={this.menuItems} />
             </div>
         )
     }
 };
+
+
+const mapStateToProps = (storeState) => {
+    return {
+        datagram: storeState.datagram,
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({
+        generateTopology: generateTopology
+    }, dispatch);
+}
+
+const TopologyApp = connect(mapStateToProps, mapDispatchToProps)(Topology);
+
+export default TopologyApp;

@@ -14,36 +14,26 @@ var React = require("react");
 var Toolbar = (function (_super) {
     __extends(Toolbar, _super);
     function Toolbar(props, context) {
-        var _this = _super.call(this, props, context) || this;
-        _this.initState = function () {
-            return {
-                isLocked: false,
-            };
-        };
-        _this.state = _this.initState();
-        return _this;
+        return _super.call(this, props, context) || this;
     }
     Toolbar.prototype.render = function () {
-        return (React.createElement("div", { id: "toolbar" },
-            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "add_node", value: "增加节点", seat: "toolbar" }),
-            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "edit_node", value: "编辑节点", seat: "toolbar" }),
-            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "add_edge", value: "增加连接", seat: "toolbar" }),
-            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "edit_edge", value: "编辑连接", seat: "toolbar" }),
-            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "delete_selected", value: "删除元素", seat: "toolbar" }),
-            React.createElement(FuncBtn, { changeEditMode: this.props.changeEditMode, name: "layout", value: "预设布局", seat: "toolbar" })));
+        var _this = this;
+        var inline = {
+            display: "inline-block"
+        };
+        return (React.createElement("div", { id: "toolbar" }, this.props.items.map(function (item, index) {
+            if (item.type == "button") {
+                // isLocked属性仅锁定button类型的item
+                return (React.createElement("button", { key: index, onClick: item.callback, disabled: _this.props.isLocked ? true : false }, item.text));
+            }
+            if (item.type == "checkbox") {
+                return (React.createElement("div", { key: index, style: inline },
+                    React.createElement("span", null, item.text),
+                    React.createElement("input", { type: "checkbox", onChange: item.callback })));
+            }
+        })));
     };
     return Toolbar;
 }(React.Component));
 exports.Toolbar = Toolbar;
-var FuncBtn = (function (_super) {
-    __extends(FuncBtn, _super);
-    function FuncBtn(props, context) {
-        return _super.call(this, props, context) || this;
-    }
-    FuncBtn.prototype.render = function () {
-        var _this = this;
-        return (React.createElement("button", { onClick: function () { return _this.props.changeEditMode(_this.props.name); }, name: this.props.name }, this.props.value));
-    };
-    return FuncBtn;
-}(React.Component));
 //# sourceMappingURL=Toolbar.js.map

@@ -1,30 +1,56 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as vis from "vis";
-import * as dataset from "../../constants/dataset";
 import { options } from "../../constants/options";
 
 export class Network extends React.Component<any, any> {
     private network: any;
-    private dataset: any;
+    private container: any;
+    private datagram: any;
     private options: any;
     constructor(props, context) {
         super(props, context);
+        this.datagram = {
+            nodes: new vis.DataSet(this.props.datagram.nodes),
+            edges: new vis.DataSet(this.props.datagram.edges)
+        }
+        this.options = options;
     }
     componentDidMount() {
-        this.dataset = {
-            nodes: dataset.nodes,
-            edges: dataset.edges
-        };
-        this.options = options;
-        this.network = new vis.Network(document.getElementById('network'), this.dataset, this.options);
+        this.container = document.getElementById("network");
+        this.network = new vis.Network(this.container, this.datagram, this.options);
     }
     componentDidUpdate() {
         const network = this.network;
-        const nodes = this.dataset.nodes;
+        const nodes = this.datagram.nodes;
         const selected_node_id = network.getSelectedNodes()[0];
         const selected_node_label = nodes.get(selected_node_id).label;
         let updateOptions = {};
+        if (this.props.isLocked) {
+            updateOptions = {
+                interaction: {
+                    keyboard: false,
+                    navigationButtons: false,
+                    zoomView: false,
+                    dragView: false,
+                    dragNodes: false
+                }
+            };
+            network.setOptions(updateOptions);
+            return;
+        } else {
+            updateOptions = {
+                interaction: {
+                    keyboard: true,
+                    navigationButtons: true,
+                    zoomView: true,
+                    dragView: true,
+                    dragNodes: true
+                }
+            };
+            network.setOptions(updateOptions);
+        }
+
         switch (this.props.editMode) {
             case "add_node":
                 network.addNodeMode();
@@ -174,7 +200,10 @@ export class Network extends React.Component<any, any> {
     }
     render() {
         return (
-            <div id="network">
+            <div>
+                <button onClick={this.props.generateTopology}>生成拓扑图</button>
+                <div id="network">
+                </div>
             </div>
         )
     }
