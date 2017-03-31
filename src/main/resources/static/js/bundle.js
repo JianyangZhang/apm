@@ -51,7 +51,7 @@
 	var redux_1 = __webpack_require__(178);
 	var react_redux_1 = __webpack_require__(199);
 	var topologyReducers_1 = __webpack_require__(216);
-	var Topology_1 = __webpack_require__(219);
+	var Topology_1 = __webpack_require__(218);
 	var store = redux_1.createStore(topologyReducers_1.topologyReducers);
 	ReactDOM.render(React.createElement(react_redux_1.Provider, { store: store },
 	    React.createElement(Topology_1.default, null)), document.getElementById('topology'));
@@ -23716,15 +23716,16 @@
 	            $.ajax({
 	                async: true,
 	                url: "/topology/nodes",
-	                type: 'PUT',
-	                data: action.payload.nodes,
+	                type: "PUT",
+	                data: JSON.stringify(action.payload.nodes),
 	                success: function () {
 	                    console.log("成功写入数据库");
 	                },
 	                error: function (error) {
-	                    console.log("操作失败: ", error);
+	                    console.log(error);
 	                },
-	                dataType: "json"
+	                dataType: "json",
+	                contentType: "application/json"
 	            });
 	            return action.payload;
 	        default:
@@ -23734,8 +23735,7 @@
 
 
 /***/ },
-/* 218 */,
-/* 219 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23753,13 +23753,13 @@
 	var React = __webpack_require__(1);
 	var redux_1 = __webpack_require__(178);
 	var react_redux_1 = __webpack_require__(199);
-	var topologyActions_1 = __webpack_require__(220);
-	var Toolbar_1 = __webpack_require__(221);
-	var Network_1 = __webpack_require__(222);
-	var Console_1 = __webpack_require__(225);
-	var RightClickMenu_1 = __webpack_require__(226);
-	var didUpdate_1 = __webpack_require__(227);
-	var afterFinalMount_1 = __webpack_require__(228);
+	var topologyActions_1 = __webpack_require__(219);
+	var Toolbar_1 = __webpack_require__(220);
+	var Network_1 = __webpack_require__(221);
+	var Console_1 = __webpack_require__(224);
+	var RightClickMenu_1 = __webpack_require__(225);
+	var didUpdate_1 = __webpack_require__(226);
+	var afterFinalMount_1 = __webpack_require__(227);
 	var Topology = (function (_super) {
 	    __extends(Topology, _super);
 	    function Topology(props, context) {
@@ -23816,13 +23816,12 @@
 
 
 /***/ },
-/* 220 */
+/* 219 */
 /***/ function(module, exports) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.saveTopology = function (datagram) {
-	    console.log("保存拓扑图...");
 	    return {
 	        type: "save_topology",
 	        payload: datagram
@@ -23831,7 +23830,7 @@
 
 
 /***/ },
-/* 221 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23875,7 +23874,7 @@
 
 
 /***/ },
-/* 222 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23891,8 +23890,8 @@
 	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
-	var vis = __webpack_require__(223);
-	var options_1 = __webpack_require__(224);
+	var vis = __webpack_require__(222);
+	var options_1 = __webpack_require__(223);
 	var Network = (function (_super) {
 	    __extends(Network, _super);
 	    function Network(props, context) {
@@ -24108,7 +24107,7 @@
 	            case "save":
 	                var that_1 = this;
 	                this.nodes.forEach(function (node) {
-	                    that_1.nodes.update({ id: node.id, topology_id: that_1.props.id });
+	                    that_1.nodes.update({ id: node.id, topology_id: that_1.props.id, x: Math.round(node.x), y: Math.round(node.y) });
 	                });
 	                var currentDatagram = {
 	                    nodes: this.nodes.get(),
@@ -24117,8 +24116,8 @@
 	                if (this.props.onSave) {
 	                    this.props.onSave(currentDatagram);
 	                }
-	                console.log(currentDatagram.nodes);
-	                console.log(currentDatagram.edges);
+	                // console.log(currentDatagram.nodes);
+	                // console.log(currentDatagram.edges);
 	                break;
 	            default:
 	                break;
@@ -24134,7 +24133,7 @@
 
 
 /***/ },
-/* 223 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -76478,7 +76477,7 @@
 	;
 
 /***/ },
-/* 224 */
+/* 223 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -76586,7 +76585,7 @@
 
 
 /***/ },
-/* 225 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -76735,7 +76734,7 @@
 
 
 /***/ },
-/* 226 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -76774,7 +76773,7 @@
 
 
 /***/ },
-/* 227 */
+/* 226 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -76802,7 +76801,7 @@
 
 
 /***/ },
-/* 228 */
+/* 227 */
 /***/ function(module, exports) {
 
 	"use strict";

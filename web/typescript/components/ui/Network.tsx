@@ -222,7 +222,7 @@ export class Network extends React.Component<any, any> {
             case "save":
                 const that = this;
                 this.nodes.forEach(function(node) {
-                    that.nodes.update({ id: node.id, topology_id: that.props.id });
+                    that.nodes.update({ id: node.id, topology_id: that.props.id, x: Math.round(node.x), y: Math.round(node.y) });
                 });
                 const currentDatagram = {
                     nodes: this.nodes.get(),
@@ -231,8 +231,8 @@ export class Network extends React.Component<any, any> {
                 if (this.props.onSave) {
                     this.props.onSave(currentDatagram);
                 }
-                console.log(currentDatagram.nodes);
-                console.log(currentDatagram.edges);
+                // console.log(currentDatagram.nodes);
+                // console.log(currentDatagram.edges);
                 break;
             default:
                 break;

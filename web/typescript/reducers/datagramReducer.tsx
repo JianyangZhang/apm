@@ -24,15 +24,16 @@ export const datagramReducer = (state = { nodes: [], edges: [] }, action) => {
             $.ajax({
                 async: true,
                 url: "/topology/nodes",
-                type: 'PUT',
-                data: action.payload.nodes,
+                type: "PUT",
+                data: JSON.stringify(action.payload.nodes),
                 success: function() {
                     console.log("成功写入数据库");
                 },
                 error: function(error) {
-                    console.log("操作失败: ", error);
+                    console.log(error);
                 },
-                dataType: "json"
+                dataType: "json",
+                contentType: "application/json"
             });
             return action.payload;
         default:

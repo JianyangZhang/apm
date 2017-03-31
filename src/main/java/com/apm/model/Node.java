@@ -14,6 +14,15 @@ public class Node {
 	int x;
 	int y;
 	
+	public Node() {
+		super();
+	}
+	
+	@Override
+	public String toString() {
+		return "Node [topology_id=" + topology_id + ", id=" + id + ", label=" + label + ", x=" + x + ", y=" + y + "]";
+	}
+
 	public Node(String topology_id, String id, String label, int x, int y) {
 		super();
 		this.topology_id = topology_id;

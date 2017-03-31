@@ -1,6 +1,7 @@
 package com.apm.service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,17 +43,18 @@ public class NodeService {
 	}
 	
 	public void erase(String topology_id) {
-		for (Node node : nodes) {
-			if (node.getTopology_id().equals(topology_id)) {
-				nodes.remove(node);
-			}
+		for (Iterator<Node> iterator = nodes.iterator(); iterator.hasNext();) {
+		    Node node = iterator.next();
+		    if (node.getTopology_id().equals(topology_id)) {
+		        iterator.remove();
+		    }
 		}
 	}
 	
 	public void update(List<Node> nodes) {
 		erase(nodes.get(0).getTopology_id());
 		for (Node node : nodes) {
-			nodes.add(node);
+			this.nodes.add(node);
 		}
 	}
 }
