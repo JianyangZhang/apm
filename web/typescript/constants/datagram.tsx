@@ -2,67 +2,73 @@ import * as vis from "vis";
 
 export const datagram = {
     nodes: [{
-        id: 1,
+        id: 0,
         label: 'alpha-1',
         image: './img/user.png',
         x: -450,
         y: 0
     }, {
-        id: 2,
+        id: 1,
         label: 'bravo-2',
         image: './img/user.png',
         x: -450,
         y: 100
     }, {
-        id: 3,
+        id: 2,
         label: 'charlie-3',
         image: './img/user.png',
         x: -450,
         y: 200
     }, {
-        id: 4,
+        id: 3,
         label: 'delta-4',
         image: './img/api.png',
         x: -150,
         y: -220
     }, {
-        id: 5,
+        id: 4,
         label: 'echo-5',
         image: './img/api.png',
         x: -150,
         y: -50
     }, {
-        id: 6,
+        id: 5,
         label: 'foxtrot-6',
         image: './img/api.png',
         x: -150,
         y: 150
     }, {
-        id: 7,
+        id: 6,
         label: 'golf-7',
         image: './img/cloud.png',
         x: 150,
         y: 20
     }, {
-        id: 8,
+        id: 7,
         label: 'hotel-8',
         image: './img/cloud.png',
         x: 150,
         y: 150
     }, {
-        id: 9,
+        id: 8,
         label: 'india-9',
         image: './img/disk.png',
         x: 450,
         y: 0
     }, {
-        id: 10,
+        id: 9,
         label: 'juliett-10',
         image: './img/disk.png',
         x: 450,
         y: 250
     }],
     edges: [{
+        from: 0,
+        to: 3
+    }, {
+        from: 0,
+        to: 4
+    }, {
         from: 1,
         to: 4
     }, {
@@ -73,27 +79,21 @@ export const datagram = {
         to: 5
     }, {
         from: 2,
-        to: 6
-    }, {
-        from: 3,
-        to: 6
-    }, {
-        from: 3,
-        to: 10
-    }, {
-        from: 4,
         to: 9
     }, {
-        from: 5,
-        to: 7
-    }, {
-        from: 5,
+        from: 3,
         to: 8
     }, {
-        from: 7,
-        to: 9
+        from: 4,
+        to: 6
     }, {
-        from: 7,
-        to: 10
+        from: 4,
+        to: 7
+    }, {
+        from: 6,
+        to: 8
+    }, {
+        from: 6,
+        to: 9
     }]
 }

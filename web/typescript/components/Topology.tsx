@@ -11,10 +11,13 @@ import { didUpdate } from "../constants/didUpdate";
 import { afterFinalMount } from "../constants/afterFinalMount";
 
 class Topology extends React.Component<any, any> {
-    private menuItems: any;
+    private menuItems: object;
+    private id: string;
     constructor(props, context) {
         super(props, context);
         this.state = this.initState();
+        this.id = "sample";
+        let flag = 0;
         this.menuItems = [
             { text: "增加节点", type: "button", callback: () => { this.setState({ edit_mode: "add_node" }); } },
             { text: "编辑节点", type: "button", callback: () => { this.setState({ edit_mode: "edit_node" }); } },
@@ -22,7 +25,7 @@ class Topology extends React.Component<any, any> {
             { text: "编辑连接", type: "button", callback: () => { this.setState({ edit_mode: "edit_edge" }); } },
             { text: "删除元素", type: "button", callback: () => { this.setState({ edit_mode: "delete_selected" }); } },
             { text: "改变布局", type: "button", callback: () => { this.setState({ edit_mode: "layout" }); } },
-            { text: "保存拓扑", type: "button", callback: () => { this.setState({ edit_mode: "save" }); } },
+            { text: "保存拓扑", type: "button", callback: () => { this.setState({ edit_mode: "save" + flag }); flag = (flag == 0) ? 1 : 0; } },
             { text: "锁定", type: "checkbox", callback: () => { this.setState({ edit_mode: "none", isLocked: !this.state.isLocked }); } },
         ]
     }
@@ -47,10 +50,11 @@ class Topology extends React.Component<any, any> {
             <div id="main">
                 <Toolbar items={this.menuItems} isLocked={this.state.isLocked} />
                 <Network
+                    id={this.id}
                     datagram={this.props.datagram}
+                    isLocked={this.state.isLocked}
                     editMode={this.state.edit_mode}
-                    onSave={this.props.saveTopology}
-                    isLocked={this.state.isLocked} />
+                    onSave={this.props.saveTopology} />
                 <Console editMode={this.state.edit_mode} />
                 <RightClickMenu items={this.menuItems} />
             </div>

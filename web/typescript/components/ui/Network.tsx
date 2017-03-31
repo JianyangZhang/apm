@@ -21,12 +21,24 @@ export class Network extends React.Component<any, any> {
         this.options = options;
     }
     componentDidMount() {
+        const that = this;
         this.container = document.getElementById("network");
         this.network = new vis.Network(this.container, this.datagram, this.options);
+        this.network.on("dragEnd", function() {
+            const selected_node_id = this.getSelectedNodes()[0];
+            const position = this.getPositions(selected_node_id);
+            const currentNodePosition = {
+                id: selected_node_id,
+                x: position[selected_node_id].x,
+                y: position[selected_node_id].y
+            }
+            that.nodes.update(currentNodePosition);
+        })
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        if (this.props.editMode == "save" && nextProps.editMode == "save") {
+        const editMode = this.props.editMode.replace(/[0-9]/g, '');
+        if (editMode == "save" && nextProps.editMode == this.props.editMode) {
             return false;
         }
         return true;
@@ -63,8 +75,8 @@ export class Network extends React.Component<any, any> {
             };
             network.setOptions(updateOptions);
         }
-
-        switch (this.props.editMode) {
+        const editMode = this.props.editMode.replace(/[0-9]/g, '');
+        switch (editMode) {
             case "add_node":
                 network.addNodeMode();
                 break;
@@ -208,6 +220,10 @@ export class Network extends React.Component<any, any> {
                 });
                 break;
             case "save":
+                const that = this;
+                this.nodes.forEach(function(node) {
+                    that.nodes.update({ id: node.id, topology_id: that.props.id });
+                });
                 const currentDatagram = {
                     nodes: this.nodes.get(),
                     edges: this.edges.get()
@@ -215,8 +231,8 @@ export class Network extends React.Component<any, any> {
                 if (this.props.onSave) {
                     this.props.onSave(currentDatagram);
                 }
-                console.log(currentDatagram.nodes[0].x);
-                console.log(network.getSeed());
+                console.log(currentDatagram.nodes);
+                console.log(currentDatagram.edges);
                 break;
             default:
                 break;

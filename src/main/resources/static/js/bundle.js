@@ -51,7 +51,7 @@
 	var redux_1 = __webpack_require__(178);
 	var react_redux_1 = __webpack_require__(199);
 	var topologyReducers_1 = __webpack_require__(216);
-	var Topology_1 = __webpack_require__(218);
+	var Topology_1 = __webpack_require__(219);
 	var store = redux_1.createStore(topologyReducers_1.topologyReducers);
 	ReactDOM.render(React.createElement(react_redux_1.Provider, { store: store },
 	    React.createElement(Topology_1.default, null)), document.getElementById('topology'));
@@ -23687,24 +23687,55 @@
 
 /***/ },
 /* 217 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
-	var datagram_1 = __webpack_require__(228);
+	// import { datagram } from "../constants/datagram";
+	var datagram = {
+	    nodes: [],
+	    edges: []
+	};
+	$.ajax({
+	    async: false,
+	    url: "/topology/nodes/sample",
+	    type: 'GET',
+	    data: {},
+	    success: function (data) {
+	        datagram.nodes = data;
+	    },
+	    error: function (error) {
+	        console.log("ERROR: ", error);
+	    },
+	    dataType: "json"
+	});
 	exports.datagramReducer = function (state, action) {
 	    if (state === void 0) { state = { nodes: [], edges: [] }; }
 	    switch (action.type) {
 	        case "save_topology":
+	            $.ajax({
+	                async: true,
+	                url: "/topology/nodes",
+	                type: 'PUT',
+	                data: action.payload.nodes,
+	                success: function () {
+	                    console.log("成功写入数据库");
+	                },
+	                error: function (error) {
+	                    console.log("操作失败: ", error);
+	                },
+	                dataType: "json"
+	            });
 	            return action.payload;
 	        default:
-	            return datagram_1.datagram;
+	            return datagram;
 	    }
 	};
 
 
 /***/ },
-/* 218 */
+/* 218 */,
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23722,13 +23753,13 @@
 	var React = __webpack_require__(1);
 	var redux_1 = __webpack_require__(178);
 	var react_redux_1 = __webpack_require__(199);
-	var topologyActions_1 = __webpack_require__(219);
-	var Toolbar_1 = __webpack_require__(220);
-	var Network_1 = __webpack_require__(221);
-	var Console_1 = __webpack_require__(224);
-	var RightClickMenu_1 = __webpack_require__(225);
-	var didUpdate_1 = __webpack_require__(226);
-	var afterFinalMount_1 = __webpack_require__(227);
+	var topologyActions_1 = __webpack_require__(220);
+	var Toolbar_1 = __webpack_require__(221);
+	var Network_1 = __webpack_require__(222);
+	var Console_1 = __webpack_require__(225);
+	var RightClickMenu_1 = __webpack_require__(226);
+	var didUpdate_1 = __webpack_require__(227);
+	var afterFinalMount_1 = __webpack_require__(228);
 	var Topology = (function (_super) {
 	    __extends(Topology, _super);
 	    function Topology(props, context) {
@@ -23740,6 +23771,8 @@
 	            };
 	        };
 	        _this.state = _this.initState();
+	        _this.id = "sample";
+	        var flag = 0;
 	        _this.menuItems = [
 	            { text: "增加节点", type: "button", callback: function () { _this.setState({ edit_mode: "add_node" }); } },
 	            { text: "编辑节点", type: "button", callback: function () { _this.setState({ edit_mode: "edit_node" }); } },
@@ -23747,7 +23780,7 @@
 	            { text: "编辑连接", type: "button", callback: function () { _this.setState({ edit_mode: "edit_edge" }); } },
 	            { text: "删除元素", type: "button", callback: function () { _this.setState({ edit_mode: "delete_selected" }); } },
 	            { text: "改变布局", type: "button", callback: function () { _this.setState({ edit_mode: "layout" }); } },
-	            { text: "保存拓扑", type: "button", callback: function () { _this.setState({ edit_mode: "save" }); } },
+	            { text: "保存拓扑", type: "button", callback: function () { _this.setState({ edit_mode: "save" + flag }); flag = (flag == 0) ? 1 : 0; } },
 	            { text: "锁定", type: "checkbox", callback: function () { _this.setState({ edit_mode: "none", isLocked: !_this.state.isLocked }); } },
 	        ];
 	        return _this;
@@ -23761,7 +23794,7 @@
 	    Topology.prototype.render = function () {
 	        return (React.createElement("div", { id: "main" },
 	            React.createElement(Toolbar_1.Toolbar, { items: this.menuItems, isLocked: this.state.isLocked }),
-	            React.createElement(Network_1.Network, { datagram: this.props.datagram, editMode: this.state.edit_mode, onSave: this.props.saveTopology, isLocked: this.state.isLocked }),
+	            React.createElement(Network_1.Network, { id: this.id, datagram: this.props.datagram, isLocked: this.state.isLocked, editMode: this.state.edit_mode, onSave: this.props.saveTopology }),
 	            React.createElement(Console_1.Console, { editMode: this.state.edit_mode }),
 	            React.createElement(RightClickMenu_1.RightClickMenu, { items: this.menuItems })));
 	    };
@@ -23783,7 +23816,7 @@
 
 
 /***/ },
-/* 219 */
+/* 220 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23798,7 +23831,7 @@
 
 
 /***/ },
-/* 220 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23842,7 +23875,7 @@
 
 
 /***/ },
-/* 221 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23858,8 +23891,8 @@
 	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
-	var vis = __webpack_require__(222);
-	var options_1 = __webpack_require__(223);
+	var vis = __webpack_require__(223);
+	var options_1 = __webpack_require__(224);
 	var Network = (function (_super) {
 	    __extends(Network, _super);
 	    function Network(props, context) {
@@ -23874,11 +23907,23 @@
 	        return _this;
 	    }
 	    Network.prototype.componentDidMount = function () {
+	        var that = this;
 	        this.container = document.getElementById("network");
 	        this.network = new vis.Network(this.container, this.datagram, this.options);
+	        this.network.on("dragEnd", function () {
+	            var selected_node_id = this.getSelectedNodes()[0];
+	            var position = this.getPositions(selected_node_id);
+	            var currentNodePosition = {
+	                id: selected_node_id,
+	                x: position[selected_node_id].x,
+	                y: position[selected_node_id].y
+	            };
+	            that.nodes.update(currentNodePosition);
+	        });
 	    };
 	    Network.prototype.shouldComponentUpdate = function (nextProps, nextState) {
-	        if (this.props.editMode == "save" && nextProps.editMode == "save") {
+	        var editMode = this.props.editMode.replace(/[0-9]/g, '');
+	        if (editMode == "save" && nextProps.editMode == this.props.editMode) {
 	            return false;
 	        }
 	        return true;
@@ -23915,7 +23960,8 @@
 	            };
 	            network.setOptions(updateOptions);
 	        }
-	        switch (this.props.editMode) {
+	        var editMode = this.props.editMode.replace(/[0-9]/g, '');
+	        switch (editMode) {
 	            case "add_node":
 	                network.addNodeMode();
 	                break;
@@ -24060,6 +24106,10 @@
 	                });
 	                break;
 	            case "save":
+	                var that_1 = this;
+	                this.nodes.forEach(function (node) {
+	                    that_1.nodes.update({ id: node.id, topology_id: that_1.props.id });
+	                });
 	                var currentDatagram = {
 	                    nodes: this.nodes.get(),
 	                    edges: this.edges.get()
@@ -24067,8 +24117,8 @@
 	                if (this.props.onSave) {
 	                    this.props.onSave(currentDatagram);
 	                }
-	                console.log(currentDatagram.nodes[0].x);
-	                console.log(network.getSeed());
+	                console.log(currentDatagram.nodes);
+	                console.log(currentDatagram.edges);
 	                break;
 	            default:
 	                break;
@@ -24084,7 +24134,7 @@
 
 
 /***/ },
-/* 222 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -76428,7 +76478,7 @@
 	;
 
 /***/ },
-/* 223 */
+/* 224 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -76536,7 +76586,7 @@
 
 
 /***/ },
-/* 224 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -76685,7 +76735,7 @@
 
 
 /***/ },
-/* 225 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -76724,7 +76774,7 @@
 
 
 /***/ },
-/* 226 */
+/* 227 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -76752,7 +76802,7 @@
 
 
 /***/ },
-/* 227 */
+/* 228 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -76775,111 +76825,6 @@
 	    });
 	}
 	exports.afterFinalMount = afterFinalMount;
-
-
-/***/ },
-/* 228 */
-/***/ function(module, exports) {
-
-	"use strict";
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.datagram = {
-	    nodes: [{
-	            id: 1,
-	            label: 'alpha-1',
-	            image: './img/user.png',
-	            x: -450,
-	            y: 0
-	        }, {
-	            id: 2,
-	            label: 'bravo-2',
-	            image: './img/user.png',
-	            x: -450,
-	            y: 100
-	        }, {
-	            id: 3,
-	            label: 'charlie-3',
-	            image: './img/user.png',
-	            x: -450,
-	            y: 200
-	        }, {
-	            id: 4,
-	            label: 'delta-4',
-	            image: './img/api.png',
-	            x: -150,
-	            y: -220
-	        }, {
-	            id: 5,
-	            label: 'echo-5',
-	            image: './img/api.png',
-	            x: -150,
-	            y: -50
-	        }, {
-	            id: 6,
-	            label: 'foxtrot-6',
-	            image: './img/api.png',
-	            x: -150,
-	            y: 150
-	        }, {
-	            id: 7,
-	            label: 'golf-7',
-	            image: './img/cloud.png',
-	            x: 150,
-	            y: 20
-	        }, {
-	            id: 8,
-	            label: 'hotel-8',
-	            image: './img/cloud.png',
-	            x: 150,
-	            y: 150
-	        }, {
-	            id: 9,
-	            label: 'india-9',
-	            image: './img/disk.png',
-	            x: 450,
-	            y: 0
-	        }, {
-	            id: 10,
-	            label: 'juliett-10',
-	            image: './img/disk.png',
-	            x: 450,
-	            y: 250
-	        }],
-	    edges: [{
-	            from: 1,
-	            to: 4
-	        }, {
-	            from: 1,
-	            to: 5
-	        }, {
-	            from: 2,
-	            to: 5
-	        }, {
-	            from: 2,
-	            to: 6
-	        }, {
-	            from: 3,
-	            to: 6
-	        }, {
-	            from: 3,
-	            to: 10
-	        }, {
-	            from: 4,
-	            to: 9
-	        }, {
-	            from: 5,
-	            to: 7
-	        }, {
-	            from: 5,
-	            to: 8
-	        }, {
-	            from: 7,
-	            to: 9
-	        }, {
-	            from: 7,
-	            to: 10
-	        }]
-	};
 
 
 /***/ }
