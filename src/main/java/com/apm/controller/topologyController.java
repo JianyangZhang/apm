@@ -10,20 +10,43 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.apm.model.Node;
 import com.apm.model.Topology;
+import com.apm.service.NodeService;
 import com.apm.service.TopologyService;
 
-// 这个controller暂时没什么用
+
 @RestController
 @RequestMapping("/topology")
-public class topologyController {
+public class TopologyController {
 	
 	@Autowired
 	private TopologyService topologyService;
 	
+	@Autowired
+	private NodeService nodeService;
+	
 	@CrossOrigin
 	@RequestMapping("/graphs")
-	public List<Topology> getAll() {
+	public List<Topology> getAllTopologies() {
 		return topologyService.getAll();
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/nodes")
+	public List<Node> getAllNodes() {
+		return nodeService.getAll();
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/nodes/{topology_id}")
+	public List<Node> getNodes(@PathVariable("topology_id") String topology_id) {
+		return nodeService.getNodes(topology_id);
+	}
+	
+	@CrossOrigin
+	@RequestMapping(method=RequestMethod.PUT, value="/nodes")
+	public void update(@RequestBody List<Node> nodes) {
+		nodeService.update(nodes);
 	}
 }
