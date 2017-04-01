@@ -23689,9 +23689,9 @@
 /* 217 */
 /***/ function(module, exports) {
 
+	// import { datagram } from "../constants/datagram";
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
-	// import { datagram } from "../constants/datagram";
 	var datagram = {
 	    nodes: [],
 	    edges: []
@@ -23702,10 +23702,25 @@
 	    type: 'GET',
 	    data: {},
 	    success: function (data) {
+	        console.log("%c从数据库读取nodes成功", 'color: green;');
 	        datagram.nodes = data;
 	    },
 	    error: function (error) {
-	        console.log("ERROR: ", error);
+	        console.log("从数据库读取nodes失败: ", error);
+	    },
+	    dataType: "json"
+	});
+	$.ajax({
+	    async: false,
+	    url: "/topology/edges/sample",
+	    type: 'GET',
+	    data: {},
+	    success: function (data) {
+	        console.log("%c从数据库读取edges成功", 'color: green;');
+	        datagram.edges = data;
+	    },
+	    error: function (error) {
+	        console.log("从数据库读取edges失败: ", error);
 	    },
 	    dataType: "json"
 	});
@@ -23713,18 +23728,48 @@
 	    if (state === void 0) { state = { nodes: [], edges: [] }; }
 	    switch (action.type) {
 	        case "save_topology":
+	            if (action.payload.nodes == "delete") {
+	                var deleteURL = "/topology/" + action.payload.topology_id;
+	                $.ajax({
+	                    async: true,
+	                    url: deleteURL,
+	                    type: "DELETE",
+	                    data: {},
+	                    success: function () {
+	                        console.log("%c清空拓扑图成功", 'color: green;');
+	                    },
+	                    error: function (error) {
+	                        console.log("清空拓扑图失败: ", error);
+	                    },
+	                });
+	                return state;
+	            }
 	            $.ajax({
 	                async: true,
 	                url: "/topology/nodes",
 	                type: "PUT",
 	                data: JSON.stringify(action.payload.nodes),
-	                success: function () {
-	                    console.log("成功写入数据库");
+	                success: function (data) {
+	                    console.log("%c成功将nodes写入数据库", 'color: green;');
 	                },
 	                error: function (error) {
-	                    console.log(error);
+	                    console.log("nodes写入数据库失败: ", error);
 	                },
-	                dataType: "json",
+	                dataType: "text",
+	                contentType: "application/json"
+	            });
+	            $.ajax({
+	                async: true,
+	                url: "/topology/edges",
+	                type: "PUT",
+	                data: JSON.stringify(action.payload.edges),
+	                success: function (data) {
+	                    console.log("%c成功将edges写入数据库", 'color: green;');
+	                },
+	                error: function (error) {
+	                    console.log("edges写入数据库失败: ", error);
+	                },
+	                dataType: "text",
 	                contentType: "application/json"
 	            });
 	            return action.payload;
@@ -23910,6 +23955,9 @@
 	        this.container = document.getElementById("network");
 	        this.network = new vis.Network(this.container, this.datagram, this.options);
 	        this.network.on("dragEnd", function () {
+	            if (this.getSelectedNodes().length == 0) {
+	                return;
+	            }
 	            var selected_node_id = this.getSelectedNodes()[0];
 	            var position = this.getPositions(selected_node_id);
 	            var currentNodePosition = {
@@ -23931,6 +23979,8 @@
 	        var network = this.network;
 	        var selected_node_id = network.getSelectedNodes()[0];
 	        var selected_node_label = this.nodes.get(selected_node_id).label;
+	        // const selected_node_shape = this.nodes.get(selected_node_id).shape;
+	        var selected_node_size = this.nodes.get(selected_node_id).size;
 	        var updateOptions = {};
 	        if (this.props.isLocked) {
 	            updateOptions = {
@@ -23969,13 +24019,17 @@
 	                    $("#edit_node_label").val("没有节点被选中！");
 	                    $("#edit_node_label").prop('disabled', true);
 	                    $("#edit_node_shape").prop('disabled', true);
+	                    $("#edit_node_size").prop('disabled', true);
 	                    $("#edit_node_confirm").prop('disabled', true);
 	                }
 	                else {
 	                    $("#edit_node_label").prop('disabled', false);
 	                    $("#edit_node_shape").prop('disabled', false);
+	                    $("#edit_node_size").prop('disabled', false);
 	                    $("#edit_node_confirm").prop('disabled', false);
 	                    $("#edit_node_label").val(selected_node_label);
+	                    $("#edit_node_shape").val("stay_the_same");
+	                    $("#edit_node_size").val(selected_node_size);
 	                    $("#edit_node_confirm").on("click", function () {
 	                        network.editNode();
 	                    });
@@ -24105,9 +24159,21 @@
 	                });
 	                break;
 	            case "save":
+	                if (this.nodes.get().length == 0) {
+	                    var currentDatagram_1 = {
+	                        nodes: "delete",
+	                        edges: "delete",
+	                        topology_id: this.props.id
+	                    };
+	                    this.props.onSave(currentDatagram_1);
+	                    break;
+	                }
 	                var that_1 = this;
 	                this.nodes.forEach(function (node) {
 	                    that_1.nodes.update({ id: node.id, topology_id: that_1.props.id, x: Math.round(node.x), y: Math.round(node.y) });
+	                });
+	                this.edges.forEach(function (edge) {
+	                    that_1.edges.update({ id: edge.id, topology_id: that_1.props.id });
 	                });
 	                var currentDatagram = {
 	                    nodes: this.nodes.get(),
@@ -24116,8 +24182,8 @@
 	                if (this.props.onSave) {
 	                    this.props.onSave(currentDatagram);
 	                }
-	                // console.log(currentDatagram.nodes);
-	                // console.log(currentDatagram.edges);
+	                console.log("准备写入数据库的nodes: ", currentDatagram.nodes);
+	                console.log("准备写入数据库的edges: ", currentDatagram.edges);
 	                break;
 	            default:
 	                break;
@@ -76488,8 +76554,8 @@
 	    clickToUse: false,
 	    nodes: {
 	        shape: 'circularImage',
-	        brokenImage: "./img/default.png",
-	        image: "./img/default.png",
+	        brokenImage: "./img/computer.png",
+	        image: "./img/computer.png",
 	        size: 20,
 	        physics: false,
 	        shadow: false,
@@ -76549,12 +76615,44 @@
 	        initiallyActive: true,
 	        addNode: function (nodeInfo, callback) {
 	            nodeInfo.label = "new node";
+	            nodeInfo.size = 20;
+	            nodeInfo.shape = "circularImage";
+	            nodeInfo.image = "./img/computer.png";
 	            callback(nodeInfo);
 	        },
 	        editNode: function (nodeInfo, callback) {
 	            nodeInfo.label = $("#edit_node_label").val();
 	            if ($("#edit_node_shape").val() != "stay_the_same") {
-	                nodeInfo.shape = $("#edit_node_shape").val();
+	                switch ($("#edit_node_shape").val()) {
+	                    case "computer":
+	                        nodeInfo.shape = "circularImage";
+	                        nodeInfo.image = "./img/computer.png";
+	                        break;
+	                    case "user":
+	                        nodeInfo.shape = "circularImage";
+	                        nodeInfo.image = "./img/user.png";
+	                        break;
+	                    case "api":
+	                        nodeInfo.shape = "circularImage";
+	                        nodeInfo.image = "./img/api.png";
+	                        break;
+	                    case "download":
+	                        nodeInfo.shape = "circularImage";
+	                        nodeInfo.image = "./img/download.png";
+	                        break;
+	                    case "disk":
+	                        nodeInfo.shape = "circularImage";
+	                        nodeInfo.image = "./img/disk.png";
+	                        break;
+	                    default:
+	                        nodeInfo.shape = $("#edit_node_shape").val();
+	                        nodeInfo.image = null;
+	                        break;
+	                }
+	            }
+	            var nodeSize = parseInt($("#edit_node_size").val());
+	            if (nodeSize >= 1 && nodeSize <= 100) {
+	                nodeInfo.size = nodeSize;
 	            }
 	            nodeInfo.shadow = false; // vis.js glitch
 	            callback(nodeInfo);
@@ -76689,7 +76787,18 @@
 	var EditNodePanel = (function (_super) {
 	    __extends(EditNodePanel, _super);
 	    function EditNodePanel(props, context) {
-	        return _super.call(this, props, context) || this;
+	        var _this = _super.call(this, props, context) || this;
+	        _this.setSizePanelDisable = function () {
+	            var val = $("#edit_node_shape").val();
+	            if (val == "ellipse" || val == "circle" || val == "database" || val == "box" || val == "text") {
+	                $("#edit_node_size").val(null);
+	                $("#edit_node_size").prop('disabled', true);
+	            }
+	            else {
+	                $("#edit_node_size").prop('disabled', false);
+	            }
+	        };
+	        return _this;
 	    }
 	    EditNodePanel.prototype.render = function () {
 	        var style = {
@@ -76697,13 +76806,28 @@
 	        };
 	        return (React.createElement("div", { id: "edit_node_panel", style: style },
 	            React.createElement("span", null, "\u8282\u70B9\u6807\u7B7E: "),
-	            React.createElement("input", { id: "edit_node_label", type: "text", size: 30 }),
+	            React.createElement("input", { id: "edit_node_label", type: "text", size: 30, placeholder: "为节点添加文本" }),
 	            React.createElement("span", null, "\u8282\u70B9\u56FE\u5F62: "),
-	            React.createElement("select", { id: "edit_node_shape" },
+	            React.createElement("select", { id: "edit_node_shape", onChange: this.setSizePanelDisable },
 	                React.createElement("option", { value: "stay_the_same" }, "\u4FDD\u6301\u539F\u6837"),
+	                React.createElement("option", { value: "computer" }, "\u8BA1\u7B97\u673A"),
+	                React.createElement("option", { value: "user" }, "\u7528\u6237"),
+	                React.createElement("option", { value: "api" }, "\u63A5\u53E3"),
+	                React.createElement("option", { value: "download" }, "\u4E0B\u8F7D"),
+	                React.createElement("option", { value: "disk" }, "\u786C\u76D8"),
+	                React.createElement("option", { value: "circle" }, "\u5706\u5708"),
+	                React.createElement("option", { value: "dot" }, "\u5706\u70B9"),
 	                React.createElement("option", { value: "ellipse" }, "\u692D\u5706"),
-	                React.createElement("option", { value: "circle" }, "\u5706\u5F62"),
-	                React.createElement("option", { value: "box" }, "\u65B9\u5757")),
+	                React.createElement("option", { value: "box" }, "\u957F\u65B9\u5F62"),
+	                React.createElement("option", { value: "square" }, "\u6B63\u65B9\u5F62"),
+	                React.createElement("option", { value: "triangle" }, "\u4E09\u89D2\u5F62"),
+	                React.createElement("option", { value: "triangleDown" }, "\u5012\u4E09\u89D2\u5F62"),
+	                React.createElement("option", { value: "diamond" }, "\u83F1\u5F62"),
+	                React.createElement("option", { value: "star" }, "\u661F\u5F62"),
+	                React.createElement("option", { value: "database" }, "\u5706\u67F1"),
+	                React.createElement("option", { value: "text" }, "\u7EAF\u6587\u672C")),
+	            React.createElement("span", null, "\u8282\u70B9\u5927\u5C0F: "),
+	            React.createElement("input", { id: "edit_node_size", type: "number", placeholder: "1-100整数" }),
 	            React.createElement("button", { id: "edit_node_confirm", onClick: this.props.toggleVisibility }, "\u786E\u8BA4"),
 	            React.createElement("button", { id: "edit_node_cancel", onClick: this.props.toggleVisibility }, "\u53D6\u6D88")));
 	    };

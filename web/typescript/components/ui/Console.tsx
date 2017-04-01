@@ -93,6 +93,16 @@ class EditNodePanel extends React.Component<any, any> {
         super(props, context);
     }
 
+    setSizePanelDisable = () => {
+        const val: string = $("#edit_node_shape").val();
+        if (val == "ellipse" || val == "circle" || val == "database" || val == "box" || val == "text") {
+            $("#edit_node_size").val(null);
+            $("#edit_node_size").prop('disabled', true);
+        } else {
+            $("#edit_node_size").prop('disabled', false);
+        }
+    }
+
     render() {
         const style = {
             display: this.props.isVisible ? "table" : "none"
@@ -100,14 +110,29 @@ class EditNodePanel extends React.Component<any, any> {
         return (
             <div id="edit_node_panel" style={style}>
                 <span>节点标签: </span>
-                <input id="edit_node_label" type="text" size={30} />
+                <input id="edit_node_label" type="text" size={30} placeholder="为节点添加文本" />
                 <span>节点图形: </span>
-                <select id="edit_node_shape">
+                <select id="edit_node_shape" onChange={this.setSizePanelDisable}>
                     <option value="stay_the_same">保持原样</option>
+                    <option value="computer">计算机</option>
+                    <option value="user">用户</option>
+                    <option value="api">接口</option>
+                    <option value="download">下载</option>
+                    <option value="disk">硬盘</option>
+                    <option value="circle">圆圈</option>
+                    <option value="dot">圆点</option>
                     <option value="ellipse">椭圆</option>
-                    <option value="circle">圆形</option>
-                    <option value="box">方块</option>
+                    <option value="box">长方形</option>
+                    <option value="square">正方形</option>
+                    <option value="triangle">三角形</option>
+                    <option value="triangleDown">倒三角形</option>
+                    <option value="diamond">菱形</option>
+                    <option value="star">星形</option>
+                    <option value="database">圆柱</option>
+                    <option value="text">纯文本</option>
                 </select>
+                <span>节点大小: </span>
+                <input id="edit_node_size" type="number" placeholder="1-100整数" />
                 <button id="edit_node_confirm" onClick={this.props.toggleVisibility}>确认</button>
                 <button id="edit_node_cancel" onClick={this.props.toggleVisibility}>取消</button>
             </div>

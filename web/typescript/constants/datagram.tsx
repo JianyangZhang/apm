@@ -40,13 +40,13 @@ export const datagram = {
     }, {
         id: 6,
         label: 'golf-7',
-        image: './img/cloud.png',
+        image: './img/download.png',
         x: 150,
         y: 20
     }, {
         id: 7,
         label: 'hotel-8',
-        image: './img/cloud.png',
+        image: './img/download.png',
         x: 150,
         y: 150
     }, {

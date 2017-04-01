@@ -19,6 +19,11 @@ public class Topology {
 		this.topology_id = topology_id;
 	}
 	
+	@Override
+	public String toString() {
+		return "Topology [topology_id=" + topology_id + "]";
+	}
+	
 	public String getTopology_id() {
 		return topology_id;
 	}

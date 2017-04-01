@@ -15,8 +15,10 @@ public class NodeService {
 	private List<Node> nodes = new ArrayList<>();
 	
 	public NodeService() {
-		nodes.add(new Node("sample", "101", "imnode", 100, 100));
-		nodes.add(new Node("balabala", "102", "abc", 200, 200));
+		nodes.add(new Node("sample", "101", "计算机(小)", "circularImage", "./img/computer.png", 10, 100, 100));
+		nodes.add(new Node("sample", "102", "星形节点(大)", "star", null, 40, -400, -120));
+		nodes.add(new Node("sample", "103", "硬盘", "circularImage", "./img/disk.png", 20, -200, 150));
+		nodes.add(new Node("sample", "104", "菱形节点", "diamond", null, 20, 300, -20));
 	}
 	
 	public List<Node> getAll() {

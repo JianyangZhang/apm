@@ -6,8 +6,8 @@ export var options = {
     clickToUse: false,
     nodes: {
         shape: 'circularImage',
-        brokenImage: "./img/default.png",
-        image: "./img/default.png",
+        brokenImage: "./img/computer.png",
+        image: "./img/computer.png",
         size: 20,
         physics: false,
         shadow: false,
@@ -67,12 +67,44 @@ export var options = {
         initiallyActive: true,
         addNode: function(nodeInfo, callback) {
             nodeInfo.label = "new node";
+            nodeInfo.size = 20;
+            nodeInfo.shape = "circularImage";
+            nodeInfo.image = "./img/computer.png";
             callback(nodeInfo);
         },
         editNode: function(nodeInfo, callback) {
             nodeInfo.label = $("#edit_node_label").val();
             if ($("#edit_node_shape").val() != "stay_the_same") {
-                nodeInfo.shape = $("#edit_node_shape").val();
+                switch ($("#edit_node_shape").val()) {
+                    case "computer":
+                        nodeInfo.shape = "circularImage";
+                        nodeInfo.image = "./img/computer.png";
+                        break;
+                    case "user":
+                        nodeInfo.shape = "circularImage";
+                        nodeInfo.image = "./img/user.png";
+                        break;
+                    case "api":
+                        nodeInfo.shape = "circularImage";
+                        nodeInfo.image = "./img/api.png";
+                        break;
+                    case "download":
+                        nodeInfo.shape = "circularImage";
+                        nodeInfo.image = "./img/download.png";
+                        break;
+                    case "disk":
+                        nodeInfo.shape = "circularImage";
+                        nodeInfo.image = "./img/disk.png";
+                        break;
+                    default:
+                        nodeInfo.shape = $("#edit_node_shape").val();
+                        nodeInfo.image = null;
+                        break;
+                }
+            }
+            const nodeSize: number = parseInt($("#edit_node_size").val());
+            if (nodeSize >= 1 && nodeSize <= 100) {
+                nodeInfo.size = nodeSize;
             }
             nodeInfo.shadow = false; // vis.js glitch
             callback(nodeInfo);

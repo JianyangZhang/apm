@@ -25,6 +25,9 @@ export class Network extends React.Component<any, any> {
         this.container = document.getElementById("network");
         this.network = new vis.Network(this.container, this.datagram, this.options);
         this.network.on("dragEnd", function() {
+            if (this.getSelectedNodes().length == 0) {
+                return;
+            }
             const selected_node_id = this.getSelectedNodes()[0];
             const position = this.getPositions(selected_node_id);
             const currentNodePosition = {
@@ -48,6 +51,8 @@ export class Network extends React.Component<any, any> {
         const network = this.network;
         const selected_node_id = network.getSelectedNodes()[0];
         const selected_node_label = this.nodes.get(selected_node_id).label;
+        // const selected_node_shape = this.nodes.get(selected_node_id).shape;
+        const selected_node_size = this.nodes.get(selected_node_id).size;
         let updateOptions = {};
         if (this.props.isLocked) {
             updateOptions = {
@@ -85,12 +90,16 @@ export class Network extends React.Component<any, any> {
                     $("#edit_node_label").val("没有节点被选中！");
                     $("#edit_node_label").prop('disabled', true);
                     $("#edit_node_shape").prop('disabled', true);
+                    $("#edit_node_size").prop('disabled', true);
                     $("#edit_node_confirm").prop('disabled', true);
                 } else {
                     $("#edit_node_label").prop('disabled', false);
                     $("#edit_node_shape").prop('disabled', false);
+                    $("#edit_node_size").prop('disabled', false);
                     $("#edit_node_confirm").prop('disabled', false);
                     $("#edit_node_label").val(selected_node_label);
+                    $("#edit_node_shape").val("stay_the_same");
+                    $("#edit_node_size").val(selected_node_size);
                     $("#edit_node_confirm").on("click", function() {
                         network.editNode();
                     });
@@ -220,9 +229,21 @@ export class Network extends React.Component<any, any> {
                 });
                 break;
             case "save":
+                if (this.nodes.get().length == 0) {
+                    const currentDatagram = {
+                        nodes: "delete",
+                        edges: "delete",
+                        topology_id: this.props.id
+                    }
+                    this.props.onSave(currentDatagram);
+                    break;
+                }
                 const that = this;
                 this.nodes.forEach(function(node) {
                     that.nodes.update({ id: node.id, topology_id: that.props.id, x: Math.round(node.x), y: Math.round(node.y) });
+                });
+                this.edges.forEach(function(edge) {
+                    that.edges.update({ id: edge.id, topology_id: that.props.id });
                 });
                 const currentDatagram = {
                     nodes: this.nodes.get(),
@@ -231,8 +252,8 @@ export class Network extends React.Component<any, any> {
                 if (this.props.onSave) {
                     this.props.onSave(currentDatagram);
                 }
-                // console.log(currentDatagram.nodes);
-                // console.log(currentDatagram.edges);
+                console.log("准备写入数据库的nodes: ", currentDatagram.nodes);
+                console.log("准备写入数据库的edges: ", currentDatagram.edges);
                 break;
             default:
                 break;
