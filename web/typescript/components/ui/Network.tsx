@@ -25,6 +25,8 @@ export class Network extends React.Component<any, any> {
         this.container = document.getElementById("network");
         this.network = new vis.Network(this.container, this.datagram, this.options);
         this.network.on("dragEnd", function() {
+            const selected_nodes_id = this.getSelectedNodes();
+            that.props.onNodesSelect(selected_nodes_id);
             if (this.getSelectedNodes().length == 0) {
                 return;
             }
@@ -36,7 +38,15 @@ export class Network extends React.Component<any, any> {
                 y: position[selected_node_id].y
             }
             that.nodes.update(currentNodePosition);
-        })
+        });
+        this.network.on("selectNode", function() {
+            const selected_nodes_id = this.getSelectedNodes();
+            that.props.onNodesSelect(selected_nodes_id);
+        });
+        this.network.on("deselectNode", function() {
+            const selected_nodes_id = this.getSelectedNodes();
+            that.props.onNodesSelect(selected_nodes_id);
+        });
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -51,7 +61,6 @@ export class Network extends React.Component<any, any> {
         const network = this.network;
         const selected_node_id = network.getSelectedNodes()[0];
         const selected_node_label = this.nodes.get(selected_node_id).label;
-        // const selected_node_shape = this.nodes.get(selected_node_id).shape;
         const selected_node_size = this.nodes.get(selected_node_id).size;
         let updateOptions = {};
         if (this.props.isLocked) {

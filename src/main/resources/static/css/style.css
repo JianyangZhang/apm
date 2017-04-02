@@ -19,7 +19,7 @@ button {
     height: 600px;
 }
 
-#edit_node_panel, #layout_panel, #pop_message {
+#add_node_panel, #edit_node_panel, #layout_panel, #pop_message {
     position: absolute;
     text-align: center;
     display: table;

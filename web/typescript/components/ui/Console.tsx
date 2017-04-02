@@ -12,13 +12,21 @@ export class Console extends React.Component<any, any> {
             // checker的作用:
             // 1.当用户不断点击工具栏的同一个按钮时, checker可以切换控制台隐藏显示状态
             // 2.当用户点击控制台的"确认"或"取消"按钮后, 控制台就被隐藏了, checker可以让工具栏的按钮再次显示控制台
+            addNodePanelChecker: true,
             editNodePanelChecker: true,
             layoutPanelChecker: true,
 
             // 真正决定控制台隐藏显示的state
+            isAddNodePanelVisible: false,
             isEditNodePanelVisible: false,
             isLayoutPanelVisible: false
         };
+    }
+
+    toggleAddNodePanelVisibility = () => {
+        this.state.addNodePanelChecker = false;
+        this.state.isAddNodePanelVisible ?
+            this.setState({ isAddNodePanelVisible: false }) : this.setState({ isAddNodePanelVisible: true });
     }
 
     toggleEditNodePanelVisibility = () => {
@@ -34,6 +42,7 @@ export class Console extends React.Component<any, any> {
     }
 
     componentDidUpdate() {
+        this.state.addNodePanelChecker = true;
         this.state.editNodePanelChecker = true;
         this.state.layoutPanelChecker = true;
     }
@@ -43,12 +52,12 @@ export class Console extends React.Component<any, any> {
             case "none":
                 return (<PopMessage message="" />);
             case "add_node":
-                return (<PopMessage message="增加新节点: 在空白处左键单击" />);
-            case "edit_node":
-                if (this.state.editNodePanelChecker) {
-                    this.state.isEditNodePanelVisible = !this.state.isEditNodePanelVisible;
+                if (this.state.addNodePanelChecker) {
+                    this.state.isAddNodePanelVisible = !this.state.isAddNodePanelVisible;
                 }
-                return (<EditNodePanel isVisible={this.state.isEditNodePanelVisible} toggleVisibility={this.toggleEditNodePanelVisibility} />);
+                return (<AddNodePanel isVisible={this.state.isAddNodePanelVisible} toggleVisibility={this.toggleAddNodePanelVisibility} />);
+            case "edit_node":
+                return (<EditNodePanel onConfirm={this.props.onConfirm} onCancel={this.props.onCancel} isEditing={this.props.isEditing} />);
             case "add_edge":
                 return (<PopMessage message="增加连接: 从一个节点拖拽到另一个节点" />);
             case "edit_edge":
@@ -88,6 +97,25 @@ class PopMessage extends React.Component<any, any> {
     }
 }
 
+class AddNodePanel extends React.Component<any, any> {
+    constructor(props, context) {
+        super(props, context);
+    }
+    render() {
+        const style = {
+            display: this.props.isVisible ? "table" : "none"
+        }
+        return (
+            <div id="add_node_panel" style={style}>
+                <span>节点标签: </span>
+                <input id="add_node_label" type="text" size={30} placeholder="请输入新节点的标签" />
+                <button id="add_node_confirm" onClick={this.props.toggleVisibility}>确认</button>
+                <button id="add_node_cancel" onClick={this.props.toggleVisibility}>取消</button>
+            </div>
+        );
+    }
+}
+
 class EditNodePanel extends React.Component<any, any> {
     constructor(props, context) {
         super(props, context);
@@ -105,7 +133,7 @@ class EditNodePanel extends React.Component<any, any> {
 
     render() {
         const style = {
-            display: this.props.isVisible ? "table" : "none"
+            display: this.props.isEditing ? "table" : "none"
         }
         return (
             <div id="edit_node_panel" style={style}>
@@ -133,8 +161,8 @@ class EditNodePanel extends React.Component<any, any> {
                 </select>
                 <span>节点大小: </span>
                 <input id="edit_node_size" type="number" placeholder="1-100整数" />
-                <button id="edit_node_confirm" onClick={this.props.toggleVisibility}>确认</button>
-                <button id="edit_node_cancel" onClick={this.props.toggleVisibility}>取消</button>
+                <button id="edit_node_confirm" onClick={this.props.onConfirm}>确认</button>
+                <button id="edit_node_cancel" onClick={this.props.onCancel}>取消</button>
             </div>
         );
     }

@@ -7,20 +7,22 @@ export class Toolbar extends React.Component<any, any> {
     }
 
     render() {
-        const inline = {
-            display: "inline-block"
+        const checkboxStyle = {
+            display: this.props.isEditing ? "none" : "inline-block",
+            float: "right",
+            margin: "5px 10px 0px 0px"
         }
         return (
             <div id="toolbar">
                 {
                     this.props.items.map((item, index) => {
                         if (item.type == "button") {
-                            // isLocked属性仅锁定button类型的item
-                            return (<button key={index} onClick={item.callback} disabled={this.props.isLocked ? true : false}>{item.text}</button>)
+                            const itemStyle = (Object as any).assign({}, item.getStyle(), { display: this.props.isEditing ? "none" : "inline-block" });
+                            return (<button style={itemStyle} key={index} onClick={item.callback} disabled={this.props.isLocked ? true : false}>{item.text}</button>)
                         }
                         if (item.type == "checkbox") {
                             return (
-                                <div key={index} style={inline}>
+                                <div key={index} style={checkboxStyle}>
                                     <span>{item.text}</span>
                                     <input type="checkbox" onChange={item.callback} />
                                 </div>

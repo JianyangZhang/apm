@@ -2,98 +2,129 @@ import * as vis from "vis";
 
 export const datagram = {
     nodes: [{
-        id: 0,
+        topology_id: "sample",
+        id: "0",
         label: 'alpha-1',
         image: './img/user.png',
+        size: 20,
         x: -450,
         y: 0
     }, {
-        id: 1,
+        topology_id: "sample",
+        id: "1",
         label: 'bravo-2',
         image: './img/user.png',
+        size: 20,
         x: -450,
         y: 100
     }, {
-        id: 2,
+        topology_id: "sample",
+        id: "2",
         label: 'charlie-3',
         image: './img/user.png',
+        size: 20,
         x: -450,
         y: 200
     }, {
-        id: 3,
+        topology_id: "sample",
+        id: "3",
         label: 'delta-4',
         image: './img/api.png',
+        size: 20,
         x: -150,
         y: -220
     }, {
-        id: 4,
+        topology_id: "sample",
+        id: "4",
         label: 'echo-5',
         image: './img/api.png',
+        size: 20,
         x: -150,
         y: -50
     }, {
-        id: 5,
+        topology_id: "sample",
+        id: "5",
         label: 'foxtrot-6',
         image: './img/api.png',
+        size: 20,
         x: -150,
         y: 150
     }, {
-        id: 6,
+        topology_id: "sample",
+        id: "6",
         label: 'golf-7',
         image: './img/download.png',
+        size: 20,
         x: 150,
         y: 20
     }, {
-        id: 7,
+        topology_id: "sample",
+        id: "7",
         label: 'hotel-8',
         image: './img/download.png',
+        size: 20,
         x: 150,
         y: 150
     }, {
-        id: 8,
+        topology_id: "sample",
+        id: "8",
         label: 'india-9',
         image: './img/disk.png',
+        size: 20,
         x: 450,
         y: 0
     }, {
-        id: 9,
+        topology_id: "sample",
+        id: "9",
         label: 'juliett-10',
         image: './img/disk.png',
+        size: 20,
         x: 450,
         y: 250
     }],
     edges: [{
-        from: 0,
-        to: 3
+        topology_id: "sample",
+        from: "0",
+        to: "3"
     }, {
-        from: 0,
-        to: 4
+        topology_id: "sample",
+        from: "0",
+        to: "4"
     }, {
-        from: 1,
-        to: 4
+        topology_id: "sample",
+        from: "1",
+        to: "4"
     }, {
-        from: 1,
-        to: 5
+        topology_id: "sample",
+        from: "1",
+        to: "5"
     }, {
-        from: 2,
-        to: 5
+        topology_id: "sample",
+        from: "2",
+        to: "5"
     }, {
-        from: 2,
-        to: 9
+        topology_id: "sample",
+        from: "2",
+        to: "9"
     }, {
-        from: 3,
-        to: 8
+        topology_id: "sample",
+        from: "3",
+        to: "8"
     }, {
-        from: 4,
-        to: 6
+        topology_id: "sample",
+        from: "4",
+        to: "6"
     }, {
-        from: 4,
-        to: 7
+        topology_id: "sample",
+        from: "4",
+        to: "7"
     }, {
-        from: 6,
-        to: 8
+        topology_id: "sample",
+        from: "6",
+        to: "8"
     }, {
-        from: 6,
-        to: 9
+        topology_id: "sample",
+        from: "6",
+        to: "9"
     }]
 }

@@ -4,3 +4,10 @@ export const saveTopology = (datagram) => {
         payload: datagram
     };
 }
+
+export const selectNodes = (nodes) => {
+    return {
+        type: "select_nodes",
+        payload: nodes
+    };
+}

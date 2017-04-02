@@ -51,8 +51,8 @@
 	var redux_1 = __webpack_require__(178);
 	var react_redux_1 = __webpack_require__(199);
 	var topologyReducers_1 = __webpack_require__(216);
-	var Topology_1 = __webpack_require__(218);
-	var store = redux_1.createStore(topologyReducers_1.topologyReducers);
+	var Topology_1 = __webpack_require__(220);
+	var store = redux_1.createStore(topologyReducers_1.topologyReducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 	ReactDOM.render(React.createElement(react_redux_1.Provider, { store: store },
 	    React.createElement(Topology_1.default, null)), document.getElementById('topology'));
 
@@ -23679,54 +23679,62 @@
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var datagramReducer_1 = __webpack_require__(217);
+	var nodeStateReducer_1 = __webpack_require__(219);
 	var redux_1 = __webpack_require__(178);
 	exports.topologyReducers = redux_1.combineReducers({
-	    datagram: datagramReducer_1.datagramReducer
+	    datagram: datagramReducer_1.datagramReducer,
+	    nodeState: nodeStateReducer_1.nodeStateReducer
 	});
 
 
 /***/ },
 /* 217 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	// import { datagram } from "../constants/datagram";
 	"use strict";
 	Object.defineProperty(exports, "__esModule", { value: true });
-	var datagram = {
+	var datagram_1 = __webpack_require__(218);
+	/*
+	const datagram = {
 	    nodes: [],
 	    edges: []
 	};
+
 	$.ajax({
 	    async: false,
 	    url: "/topology/nodes/sample",
 	    type: 'GET',
 	    data: {},
-	    success: function (data) {
+	    success: function(data) {
 	        console.log("%c从数据库读取nodes成功", 'color: green;');
 	        datagram.nodes = data;
 	    },
-	    error: function (error) {
+	    error: function(error) {
 	        console.log("从数据库读取nodes失败: ", error);
 	    },
 	    dataType: "json"
 	});
+
 	$.ajax({
 	    async: false,
 	    url: "/topology/edges/sample",
 	    type: 'GET',
 	    data: {},
-	    success: function (data) {
+	    success: function(data) {
 	        console.log("%c从数据库读取edges成功", 'color: green;');
 	        datagram.edges = data;
 	    },
-	    error: function (error) {
+	    error: function(error) {
 	        console.log("从数据库读取edges失败: ", error);
 	    },
 	    dataType: "json"
 	});
+	*/
 	exports.datagramReducer = function (state, action) {
 	    if (state === void 0) { state = { nodes: [], edges: [] }; }
 	    switch (action.type) {
+	        case "edit_topology":
+	            return action.payload;
 	        case "save_topology":
 	            if (action.payload.nodes == "delete") {
 	                var deleteURL = "/topology/" + action.payload.topology_id;
@@ -23774,13 +23782,168 @@
 	            });
 	            return action.payload;
 	        default:
-	            return datagram;
+	            return datagram_1.datagram;
 	    }
 	};
 
 
 /***/ },
 /* 218 */
+/***/ function(module, exports) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.datagram = {
+	    nodes: [{
+	            topology_id: "sample",
+	            id: "0",
+	            label: 'alpha-1',
+	            image: './img/user.png',
+	            size: 20,
+	            x: -450,
+	            y: 0
+	        }, {
+	            topology_id: "sample",
+	            id: "1",
+	            label: 'bravo-2',
+	            image: './img/user.png',
+	            size: 20,
+	            x: -450,
+	            y: 100
+	        }, {
+	            topology_id: "sample",
+	            id: "2",
+	            label: 'charlie-3',
+	            image: './img/user.png',
+	            size: 20,
+	            x: -450,
+	            y: 200
+	        }, {
+	            topology_id: "sample",
+	            id: "3",
+	            label: 'delta-4',
+	            image: './img/api.png',
+	            size: 20,
+	            x: -150,
+	            y: -220
+	        }, {
+	            topology_id: "sample",
+	            id: "4",
+	            label: 'echo-5',
+	            image: './img/api.png',
+	            size: 20,
+	            x: -150,
+	            y: -50
+	        }, {
+	            topology_id: "sample",
+	            id: "5",
+	            label: 'foxtrot-6',
+	            image: './img/api.png',
+	            size: 20,
+	            x: -150,
+	            y: 150
+	        }, {
+	            topology_id: "sample",
+	            id: "6",
+	            label: 'golf-7',
+	            image: './img/download.png',
+	            size: 20,
+	            x: 150,
+	            y: 20
+	        }, {
+	            topology_id: "sample",
+	            id: "7",
+	            label: 'hotel-8',
+	            image: './img/download.png',
+	            size: 20,
+	            x: 150,
+	            y: 150
+	        }, {
+	            topology_id: "sample",
+	            id: "8",
+	            label: 'india-9',
+	            image: './img/disk.png',
+	            size: 20,
+	            x: 450,
+	            y: 0
+	        }, {
+	            topology_id: "sample",
+	            id: "9",
+	            label: 'juliett-10',
+	            image: './img/disk.png',
+	            size: 20,
+	            x: 450,
+	            y: 250
+	        }],
+	    edges: [{
+	            topology_id: "sample",
+	            from: "0",
+	            to: "3"
+	        }, {
+	            topology_id: "sample",
+	            from: "0",
+	            to: "4"
+	        }, {
+	            topology_id: "sample",
+	            from: "1",
+	            to: "4"
+	        }, {
+	            topology_id: "sample",
+	            from: "1",
+	            to: "5"
+	        }, {
+	            topology_id: "sample",
+	            from: "2",
+	            to: "5"
+	        }, {
+	            topology_id: "sample",
+	            from: "2",
+	            to: "9"
+	        }, {
+	            topology_id: "sample",
+	            from: "3",
+	            to: "8"
+	        }, {
+	            topology_id: "sample",
+	            from: "4",
+	            to: "6"
+	        }, {
+	            topology_id: "sample",
+	            from: "4",
+	            to: "7"
+	        }, {
+	            topology_id: "sample",
+	            from: "6",
+	            to: "8"
+	        }, {
+	            topology_id: "sample",
+	            from: "6",
+	            to: "9"
+	        }]
+	};
+
+
+/***/ },
+/* 219 */
+/***/ function(module, exports) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.nodeStateReducer = function (state, action) {
+	    if (state === void 0) { state = { selectedNodes: [] }; }
+	    switch (action.type) {
+	        case "select_nodes":
+	            return {
+	                selectedNodes: action.payload
+	            };
+	        default:
+	            return state;
+	    }
+	};
+
+
+/***/ },
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23798,13 +23961,13 @@
 	var React = __webpack_require__(1);
 	var redux_1 = __webpack_require__(178);
 	var react_redux_1 = __webpack_require__(199);
-	var topologyActions_1 = __webpack_require__(219);
-	var Toolbar_1 = __webpack_require__(220);
-	var Network_1 = __webpack_require__(221);
-	var Console_1 = __webpack_require__(224);
-	var RightClickMenu_1 = __webpack_require__(225);
-	var didUpdate_1 = __webpack_require__(226);
-	var afterFinalMount_1 = __webpack_require__(227);
+	var topologyActions_1 = __webpack_require__(221);
+	var Toolbar_1 = __webpack_require__(222);
+	var Network_1 = __webpack_require__(223);
+	var Console_1 = __webpack_require__(226);
+	var RightClickMenu_1 = __webpack_require__(227);
+	var didUpdate_1 = __webpack_require__(228);
+	var afterFinalMount_1 = __webpack_require__(229);
 	var Topology = (function (_super) {
 	    __extends(Topology, _super);
 	    function Topology(props, context) {
@@ -23812,24 +23975,77 @@
 	        _this.initState = function () {
 	            return {
 	                edit_mode: "none",
-	                isLocked: false
+	                isEditing: false,
+	                isLocked: false,
 	            };
+	        };
+	        _this.generateMenuItems = function () {
+	            _this.menuItems = [
+	                {
+	                    text: "增加节点", type: "button", getStyle: function () {
+	                        return { disabled: false };
+	                    }, callback: function () { _this.setState({ edit_mode: "add_node" }); }
+	                },
+	                {
+	                    text: "编辑节点", type: "button", getStyle: function () {
+	                        if (_this.props.nodeState.selectedNodes.length != 0) {
+	                            return {
+	                                color: "black"
+	                            };
+	                        }
+	                        else {
+	                            return {
+	                                pointerEvents: "none",
+	                                color: "gray"
+	                            };
+	                        }
+	                    }, callback: function () { _this.setState({ edit_mode: "edit_node", isEditing: true }); }
+	                },
+	                {
+	                    text: "增加连接", type: "button", getStyle: function () {
+	                        return { disabled: false };
+	                    }, callback: function () { _this.setState({ edit_mode: "add_edge" }); }
+	                },
+	                {
+	                    text: "编辑连接", type: "button", getStyle: function () {
+	                        return { disabled: false };
+	                    }, callback: function () { _this.setState({ edit_mode: "edit_edge" }); }
+	                },
+	                {
+	                    text: "删除元素", type: "button", getStyle: function () {
+	                        return { disabled: false };
+	                    }, callback: function () { _this.setState({ edit_mode: "delete_selected" }); }
+	                },
+	                {
+	                    text: "改变布局", type: "button", getStyle: function () {
+	                        return { disabled: false };
+	                    }, callback: function () { _this.setState({ edit_mode: "layout" }); }
+	                },
+	                {
+	                    text: "保存拓扑", type: "button", getStyle: function () {
+	                        return { disabled: false };
+	                    }, callback: function () { _this.setState({ edit_mode: "save" + _this.flag }); _this.flag = (_this.flag == 0) ? 1 : 0; }
+	                },
+	                {
+	                    text: "锁定 ", type: "checkbox", getStyle: function () {
+	                        return { disabled: false };
+	                    }, callback: function () { _this.setState({ edit_mode: "none", isLocked: !_this.state.isLocked }); }
+	                },
+	            ];
+	        };
+	        _this.quitEditing = function () {
+	            _this.setState({
+	                isEditing: false
+	            });
 	        };
 	        _this.state = _this.initState();
 	        _this.id = "sample";
-	        var flag = 0;
-	        _this.menuItems = [
-	            { text: "增加节点", type: "button", callback: function () { _this.setState({ edit_mode: "add_node" }); } },
-	            { text: "编辑节点", type: "button", callback: function () { _this.setState({ edit_mode: "edit_node" }); } },
-	            { text: "增加连接", type: "button", callback: function () { _this.setState({ edit_mode: "add_edge" }); } },
-	            { text: "编辑连接", type: "button", callback: function () { _this.setState({ edit_mode: "edit_edge" }); } },
-	            { text: "删除元素", type: "button", callback: function () { _this.setState({ edit_mode: "delete_selected" }); } },
-	            { text: "改变布局", type: "button", callback: function () { _this.setState({ edit_mode: "layout" }); } },
-	            { text: "保存拓扑", type: "button", callback: function () { _this.setState({ edit_mode: "save" + flag }); flag = (flag == 0) ? 1 : 0; } },
-	            { text: "锁定", type: "checkbox", callback: function () { _this.setState({ edit_mode: "none", isLocked: !_this.state.isLocked }); } },
-	        ];
+	        _this.generateMenuItems();
 	        return _this;
 	    }
+	    Topology.prototype.componentWillUpdate = function () {
+	        this.generateMenuItems();
+	    };
 	    Topology.prototype.componentDidUpdate = function () {
 	        didUpdate_1.didUpdate(this.state.isLocked);
 	    };
@@ -23838,9 +24054,9 @@
 	    };
 	    Topology.prototype.render = function () {
 	        return (React.createElement("div", { id: "main" },
-	            React.createElement(Toolbar_1.Toolbar, { items: this.menuItems, isLocked: this.state.isLocked }),
-	            React.createElement(Network_1.Network, { id: this.id, datagram: this.props.datagram, isLocked: this.state.isLocked, editMode: this.state.edit_mode, onSave: this.props.saveTopology }),
-	            React.createElement(Console_1.Console, { editMode: this.state.edit_mode }),
+	            React.createElement(Toolbar_1.Toolbar, { items: this.menuItems, isEditing: this.state.isEditing, isLocked: this.state.isLocked }),
+	            React.createElement(Network_1.Network, { id: this.id, datagram: this.props.datagram, isLocked: this.state.isLocked, isEditing: this.state.isEditing, editMode: this.state.edit_mode, onNodesSelect: this.props.selectNodes, onSave: this.props.saveTopology }),
+	            React.createElement(Console_1.Console, { editMode: this.state.edit_mode, isEditing: this.state.isEditing, onConfirm: this.quitEditing, onCancel: this.quitEditing }),
 	            React.createElement(RightClickMenu_1.RightClickMenu, { items: this.menuItems })));
 	    };
 	    return Topology;
@@ -23849,11 +24065,13 @@
 	var mapStateToProps = function (storeState) {
 	    return {
 	        datagram: storeState.datagram,
+	        nodeState: storeState.nodeState
 	    };
 	};
 	var mapDispatchToProps = function (dispatch) {
 	    return redux_1.bindActionCreators({
-	        saveTopology: topologyActions_1.saveTopology
+	        saveTopology: topologyActions_1.saveTopology,
+	        selectNodes: topologyActions_1.selectNodes
 	    }, dispatch);
 	};
 	var TopologyApp = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(Topology);
@@ -23861,7 +24079,7 @@
 
 
 /***/ },
-/* 219 */
+/* 221 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23872,10 +24090,16 @@
 	        payload: datagram
 	    };
 	};
+	exports.selectNodes = function (nodes) {
+	    return {
+	        type: "select_nodes",
+	        payload: nodes
+	    };
+	};
 
 
 /***/ },
-/* 220 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23898,16 +24122,18 @@
 	    }
 	    Toolbar.prototype.render = function () {
 	        var _this = this;
-	        var inline = {
-	            display: "inline-block"
+	        var checkboxStyle = {
+	            display: this.props.isEditing ? "none" : "inline-block",
+	            float: "right",
+	            margin: "5px 10px 0px 0px"
 	        };
 	        return (React.createElement("div", { id: "toolbar" }, this.props.items.map(function (item, index) {
 	            if (item.type == "button") {
-	                // isLocked属性仅锁定button类型的item
-	                return (React.createElement("button", { key: index, onClick: item.callback, disabled: _this.props.isLocked ? true : false }, item.text));
+	                var itemStyle = Object.assign({}, item.getStyle(), { display: _this.props.isEditing ? "none" : "inline-block" });
+	                return (React.createElement("button", { style: itemStyle, key: index, onClick: item.callback, disabled: _this.props.isLocked ? true : false }, item.text));
 	            }
 	            if (item.type == "checkbox") {
-	                return (React.createElement("div", { key: index, style: inline },
+	                return (React.createElement("div", { key: index, style: checkboxStyle },
 	                    React.createElement("span", null, item.text),
 	                    React.createElement("input", { type: "checkbox", onChange: item.callback })));
 	            }
@@ -23919,7 +24145,7 @@
 
 
 /***/ },
-/* 221 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23935,8 +24161,8 @@
 	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
-	var vis = __webpack_require__(222);
-	var options_1 = __webpack_require__(223);
+	var vis = __webpack_require__(224);
+	var options_1 = __webpack_require__(225);
 	var Network = (function (_super) {
 	    __extends(Network, _super);
 	    function Network(props, context) {
@@ -23955,6 +24181,8 @@
 	        this.container = document.getElementById("network");
 	        this.network = new vis.Network(this.container, this.datagram, this.options);
 	        this.network.on("dragEnd", function () {
+	            var selected_nodes_id = this.getSelectedNodes();
+	            that.props.onNodesSelect(selected_nodes_id);
 	            if (this.getSelectedNodes().length == 0) {
 	                return;
 	            }
@@ -23966,6 +24194,14 @@
 	                y: position[selected_node_id].y
 	            };
 	            that.nodes.update(currentNodePosition);
+	        });
+	        this.network.on("selectNode", function () {
+	            var selected_nodes_id = this.getSelectedNodes();
+	            that.props.onNodesSelect(selected_nodes_id);
+	        });
+	        this.network.on("deselectNode", function () {
+	            var selected_nodes_id = this.getSelectedNodes();
+	            that.props.onNodesSelect(selected_nodes_id);
 	        });
 	    };
 	    Network.prototype.shouldComponentUpdate = function (nextProps, nextState) {
@@ -23979,7 +24215,6 @@
 	        var network = this.network;
 	        var selected_node_id = network.getSelectedNodes()[0];
 	        var selected_node_label = this.nodes.get(selected_node_id).label;
-	        // const selected_node_shape = this.nodes.get(selected_node_id).shape;
 	        var selected_node_size = this.nodes.get(selected_node_id).size;
 	        var updateOptions = {};
 	        if (this.props.isLocked) {
@@ -24199,7 +24434,7 @@
 
 
 /***/ },
-/* 222 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -76543,7 +76778,7 @@
 	;
 
 /***/ },
-/* 223 */
+/* 225 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -76683,7 +76918,7 @@
 
 
 /***/ },
-/* 224 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -76708,12 +76943,19 @@
 	                // checker的作用:
 	                // 1.当用户不断点击工具栏的同一个按钮时, checker可以切换控制台隐藏显示状态
 	                // 2.当用户点击控制台的"确认"或"取消"按钮后, 控制台就被隐藏了, checker可以让工具栏的按钮再次显示控制台
+	                addNodePanelChecker: true,
 	                editNodePanelChecker: true,
 	                layoutPanelChecker: true,
 	                // 真正决定控制台隐藏显示的state
+	                isAddNodePanelVisible: false,
 	                isEditNodePanelVisible: false,
 	                isLayoutPanelVisible: false
 	            };
+	        };
+	        _this.toggleAddNodePanelVisibility = function () {
+	            _this.state.addNodePanelChecker = false;
+	            _this.state.isAddNodePanelVisible ?
+	                _this.setState({ isAddNodePanelVisible: false }) : _this.setState({ isAddNodePanelVisible: true });
 	        };
 	        _this.toggleEditNodePanelVisibility = function () {
 	            _this.state.editNodePanelChecker = false;
@@ -76729,6 +76971,7 @@
 	        return _this;
 	    }
 	    Console.prototype.componentDidUpdate = function () {
+	        this.state.addNodePanelChecker = true;
 	        this.state.editNodePanelChecker = true;
 	        this.state.layoutPanelChecker = true;
 	    };
@@ -76737,12 +76980,12 @@
 	            case "none":
 	                return (React.createElement(PopMessage, { message: "" }));
 	            case "add_node":
-	                return (React.createElement(PopMessage, { message: "增加新节点: 在空白处左键单击" }));
-	            case "edit_node":
-	                if (this.state.editNodePanelChecker) {
-	                    this.state.isEditNodePanelVisible = !this.state.isEditNodePanelVisible;
+	                if (this.state.addNodePanelChecker) {
+	                    this.state.isAddNodePanelVisible = !this.state.isAddNodePanelVisible;
 	                }
-	                return (React.createElement(EditNodePanel, { isVisible: this.state.isEditNodePanelVisible, toggleVisibility: this.toggleEditNodePanelVisibility }));
+	                return (React.createElement(AddNodePanel, { isVisible: this.state.isAddNodePanelVisible, toggleVisibility: this.toggleAddNodePanelVisibility }));
+	            case "edit_node":
+	                return (React.createElement(EditNodePanel, { onConfirm: this.props.onConfirm, onCancel: this.props.onCancel, isEditing: this.props.isEditing }));
 	            case "add_edge":
 	                return (React.createElement(PopMessage, { message: "增加连接: 从一个节点拖拽到另一个节点" }));
 	            case "edit_edge":
@@ -76784,6 +77027,23 @@
 	    };
 	    return PopMessage;
 	}(React.Component));
+	var AddNodePanel = (function (_super) {
+	    __extends(AddNodePanel, _super);
+	    function AddNodePanel(props, context) {
+	        return _super.call(this, props, context) || this;
+	    }
+	    AddNodePanel.prototype.render = function () {
+	        var style = {
+	            display: this.props.isVisible ? "table" : "none"
+	        };
+	        return (React.createElement("div", { id: "add_node_panel", style: style },
+	            React.createElement("span", null, "\u8282\u70B9\u6807\u7B7E: "),
+	            React.createElement("input", { id: "add_node_label", type: "text", size: 30, placeholder: "请输入新节点的标签" }),
+	            React.createElement("button", { id: "add_node_confirm", onClick: this.props.toggleVisibility }, "\u786E\u8BA4"),
+	            React.createElement("button", { id: "add_node_cancel", onClick: this.props.toggleVisibility }, "\u53D6\u6D88")));
+	    };
+	    return AddNodePanel;
+	}(React.Component));
 	var EditNodePanel = (function (_super) {
 	    __extends(EditNodePanel, _super);
 	    function EditNodePanel(props, context) {
@@ -76802,7 +77062,7 @@
 	    }
 	    EditNodePanel.prototype.render = function () {
 	        var style = {
-	            display: this.props.isVisible ? "table" : "none"
+	            display: this.props.isEditing ? "table" : "none"
 	        };
 	        return (React.createElement("div", { id: "edit_node_panel", style: style },
 	            React.createElement("span", null, "\u8282\u70B9\u6807\u7B7E: "),
@@ -76828,8 +77088,8 @@
 	                React.createElement("option", { value: "text" }, "\u7EAF\u6587\u672C")),
 	            React.createElement("span", null, "\u8282\u70B9\u5927\u5C0F: "),
 	            React.createElement("input", { id: "edit_node_size", type: "number", placeholder: "1-100整数" }),
-	            React.createElement("button", { id: "edit_node_confirm", onClick: this.props.toggleVisibility }, "\u786E\u8BA4"),
-	            React.createElement("button", { id: "edit_node_cancel", onClick: this.props.toggleVisibility }, "\u53D6\u6D88")));
+	            React.createElement("button", { id: "edit_node_confirm", onClick: this.props.onConfirm }, "\u786E\u8BA4"),
+	            React.createElement("button", { id: "edit_node_cancel", onClick: this.props.onCancel }, "\u53D6\u6D88")));
 	    };
 	    return EditNodePanel;
 	}(React.Component));
@@ -76858,7 +77118,7 @@
 
 
 /***/ },
-/* 225 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -76897,7 +77157,7 @@
 
 
 /***/ },
-/* 226 */
+/* 228 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -76925,7 +77185,7 @@
 
 
 /***/ },
-/* 227 */
+/* 229 */
 /***/ function(module, exports) {
 
 	"use strict";

@@ -1,5 +1,5 @@
-// import { datagram } from "../constants/datagram";
-
+import { datagram } from "../constants/datagram";
+/*
 const datagram = {
     nodes: [],
     edges: []
@@ -34,9 +34,11 @@ $.ajax({
     },
     dataType: "json"
 });
-
+*/
 export const datagramReducer = (state = { nodes: [], edges: [] }, action) => {
     switch (action.type) {
+        case "edit_topology":
+            return action.payload;
         case "save_topology":
             if (action.payload.nodes == "delete") {
                 const deleteURL: string = "/topology/" + action.payload.topology_id;
