@@ -1,4 +1,6 @@
+/*
 import { datagram } from "../constants/datagram";
+*/
 /*
 const datagram = {
     nodes: [],
@@ -35,6 +37,7 @@ $.ajax({
     dataType: "json"
 });
 */
+/*
 export const datagramReducer = (state = { nodes: [], edges: [] }, action) => {
     switch (action.type) {
         case "edit_topology":
@@ -89,3 +92,4 @@ export const datagramReducer = (state = { nodes: [], edges: [] }, action) => {
             return datagram;
     }
 }
+*/

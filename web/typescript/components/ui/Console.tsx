@@ -4,71 +4,23 @@ import * as ReactDOM from "react-dom";
 export class Console extends React.Component<any, any> {
     constructor(props, context) {
         super(props, context);
-        this.state = this.initState();
     }
-
-    private initState = () => {
-        return {
-            // checker的作用:
-            // 1.当用户不断点击工具栏的同一个按钮时, checker可以切换控制台隐藏显示状态
-            // 2.当用户点击控制台的"确认"或"取消"按钮后, 控制台就被隐藏了, checker可以让工具栏的按钮再次显示控制台
-            addNodePanelChecker: true,
-            editNodePanelChecker: true,
-            layoutPanelChecker: true,
-
-            // 真正决定控制台隐藏显示的state
-            isAddNodePanelVisible: false,
-            isEditNodePanelVisible: false,
-            isLayoutPanelVisible: false
-        };
-    }
-
-    toggleAddNodePanelVisibility = () => {
-        this.state.addNodePanelChecker = false;
-        this.state.isAddNodePanelVisible ?
-            this.setState({ isAddNodePanelVisible: false }) : this.setState({ isAddNodePanelVisible: true });
-    }
-
-    toggleEditNodePanelVisibility = () => {
-        this.state.editNodePanelChecker = false;
-        this.state.isEditNodePanelVisible ?
-            this.setState({ isEditNodePanelVisible: false }) : this.setState({ isEditNodePanelVisible: true });
-    }
-
-    toggleLayoutPanelVisibility = () => {
-        this.state.layoutPanelChecker = false;
-        this.state.isLayoutPanelVisible ?
-            this.setState({ isLayoutPanelVisible: false }) : this.setState({ isLayoutPanelVisible: true });
-    }
-
-    componentDidUpdate() {
-        this.state.addNodePanelChecker = true;
-        this.state.editNodePanelChecker = true;
-        this.state.layoutPanelChecker = true;
-    }
-
     render() {
         switch (this.props.editMode) {
             case "none":
                 return (<PopMessage message="" />);
             case "add_node":
-                if (this.state.addNodePanelChecker) {
-                    this.state.isAddNodePanelVisible = !this.state.isAddNodePanelVisible;
-                }
-                return (<AddNodePanel isVisible={this.state.isAddNodePanelVisible} toggleVisibility={this.toggleAddNodePanelVisibility} />);
+                return (<AddNodePanel onConfirm={this.props.onConfirm} onCancel={this.props.onCancel} isEditing={this.props.isEditing} />);
             case "edit_node":
                 return (<EditNodePanel onConfirm={this.props.onConfirm} onCancel={this.props.onCancel} isEditing={this.props.isEditing} />);
             case "add_edge":
-                return (<PopMessage message="增加连接: 从一个节点拖拽到另一个节点" />);
+                return (<PopMessage message="XXXX" />);
             case "edit_edge":
-                return (<PopMessage message="编辑连接: 拖拽连接的末端" />);
+                return (<EditEdgePanel onConfirm={this.props.onConfirm} onCancel={this.props.onCancel} isEditing={this.props.isEditing} />);
             case "delete_selected":
                 return (<PopMessage message="选中的元素已经被删除" />);
             case "layout":
-                if (this.state.layoutPanelChecker) {
-                    this.state.isLayoutPanelVisible = !this.state.isLayoutPanelVisible;
-                }
-                return (<LayoutPanel isVisible={this.state.isLayoutPanelVisible} toggleVisibility={this.toggleLayoutPanelVisibility} />);
+                return (<LayoutPanel onConfirm={this.props.onConfirm} onCancel={this.props.onCancel} isEditing={this.props.isEditing} />);
             default:
                 return (<div id="console"></div>);
         }
@@ -103,14 +55,12 @@ class AddNodePanel extends React.Component<any, any> {
     }
     render() {
         const style = {
-            display: this.props.isVisible ? "table" : "none"
+            display: this.props.isEditing ? "table" : "none"
         }
         return (
             <div id="add_node_panel" style={style}>
-                <span>节点标签: </span>
-                <input id="add_node_label" type="text" size={30} placeholder="请输入新节点的标签" />
-                <button id="add_node_confirm" onClick={this.props.toggleVisibility}>确认</button>
-                <button id="add_node_cancel" onClick={this.props.toggleVisibility}>取消</button>
+                <span>在空白处单击添加新节点, 或 </span>
+                <button id="add_node_cancel" onClick={this.props.onCancel}>退出</button>
             </div>
         );
     }
@@ -163,6 +113,23 @@ class EditNodePanel extends React.Component<any, any> {
                 <input id="edit_node_size" type="number" placeholder="1-100整数" />
                 <button id="edit_node_confirm" onClick={this.props.onConfirm}>确认</button>
                 <button id="edit_node_cancel" onClick={this.props.onCancel}>取消</button>
+            </div>
+        );
+    }
+}
+
+class EditEdgePanel extends React.Component<any, any> {
+    constructor(props, context) {
+        super(props, context);
+    }
+    render() {
+        const style = {
+            display: this.props.isEditing ? "table" : "none"
+        }
+        return (
+            <div id="edit_edge_panel" style={style}>
+                <span>拖拽被选中的连接末端到其他节点 </span>
+                <button id="edit_edge_cancel" onClick={this.props.onCancel}>退出</button>
             </div>
         );
     }

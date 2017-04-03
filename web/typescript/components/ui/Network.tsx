@@ -10,6 +10,8 @@ export class Network extends React.Component<any, any> {
     private edges: any;
     private datagram: any;
     private options: any;
+    private selected_nodes_id: any;
+    private selected_edges_id: any;
     constructor(props, context) {
         super(props, context);
         this.nodes = new vis.DataSet(this.props.datagram.nodes);
@@ -19,25 +21,24 @@ export class Network extends React.Component<any, any> {
             edges: this.edges
         }
         this.options = options;
+        this.selected_nodes_id = [];
+        this.selected_edges_id = [];
     }
     componentDidMount() {
         const that = this;
         this.container = document.getElementById("network");
         this.network = new vis.Network(this.container, this.datagram, this.options);
         this.network.on("dragEnd", function() {
-            const selected_nodes_id = this.getSelectedNodes();
-            that.props.onNodesSelect(selected_nodes_id);
-            if (this.getSelectedNodes().length == 0) {
-                return;
+            if (this.selected_nodes_id.length != 0) {
+                const selected_node_id = this.selected_nodes_id[0];
+                const position = this.getPositions(selected_node_id);
+                const currentNodePosition = {
+                    id: selected_node_id,
+                    x: Math.round(position[selected_node_id].x),
+                    y: Math.round(position[selected_node_id].y)
+                }
+                that.nodes.update(currentNodePosition);
             }
-            const selected_node_id = this.getSelectedNodes()[0];
-            const position = this.getPositions(selected_node_id);
-            const currentNodePosition = {
-                id: selected_node_id,
-                x: position[selected_node_id].x,
-                y: position[selected_node_id].y
-            }
-            that.nodes.update(currentNodePosition);
         });
         this.network.on("selectNode", function() {
             const selected_nodes_id = this.getSelectedNodes();
@@ -46,6 +47,29 @@ export class Network extends React.Component<any, any> {
         this.network.on("deselectNode", function() {
             const selected_nodes_id = this.getSelectedNodes();
             that.props.onNodesSelect(selected_nodes_id);
+        });
+        this.network.on("selectEdge", function() {
+            const selected_edges_id = this.getSelectedEdges();
+            that.props.onEdgesSelect(selected_edges_id);
+        });
+        this.network.on("deselectEdge", function() {
+            const selected_edges_id = this.getSelectedEdges();
+            that.props.onEdgesSelect(selected_edges_id);
+        });
+        this.network.on("click", function(obj) {
+            if (that.props.isEditing) {
+
+            }
+        });
+        this.network.on("release", function() {
+            if (that.props.isEditing && that.props.editMode == "add_node") {
+                this.addNodeMode();
+            }
+            this.selected_nodes_id = this.getSelectedNodes();
+            if (this.selected_nodes_id.length == 0) {
+                return;
+            }
+            that.props.onNodesSelect(this.selected_nodes_id);
         });
     }
 
@@ -89,10 +113,14 @@ export class Network extends React.Component<any, any> {
             };
             network.setOptions(updateOptions);
         }
+
         const editMode = this.props.editMode.replace(/[0-9]/g, '');
         switch (editMode) {
             case "add_node":
                 network.addNodeMode();
+                if (!this.props.isEditing) {
+                    network.disableEditMode();
+                }
                 break;
             case "edit_node":
                 if (typeof (selected_node_label) == "undefined") {
@@ -119,6 +147,9 @@ export class Network extends React.Component<any, any> {
                 break;
             case "edit_edge":
                 network.editEdgeMode();
+                if (!this.props.isEditing) {
+                    network.disableEditMode();
+                }
                 break;
             case "delete_selected":
                 network.deleteSelected();
@@ -249,7 +280,7 @@ export class Network extends React.Component<any, any> {
                 }
                 const that = this;
                 this.nodes.forEach(function(node) {
-                    that.nodes.update({ id: node.id, topology_id: that.props.id, x: Math.round(node.x), y: Math.round(node.y) });
+                    that.nodes.update({ id: node.id, x: Math.round(node.x), y: Math.round(node.y) });
                 });
                 this.edges.forEach(function(edge) {
                     that.edges.update({ id: edge.id, topology_id: that.props.id });
@@ -268,6 +299,22 @@ export class Network extends React.Component<any, any> {
                 break;
         }
     }
+    /*
+        syncStore = () => {
+            const that = this;
+            this.nodes.forEach(function(node) {
+                that.nodes.update({ id: node.id, x: Math.round(node.x), y: Math.round(node.y) });
+            });
+            this.edges.forEach(function(edge) {
+                that.edges.update({ id: edge.id, topology_id: that.props.id });
+            });
+            const currentDatagram = {
+                nodes: this.nodes.get(),
+                edges: this.edges.get()
+            }
+            this.props.onEdit(currentDatagram);
+        }
+    */
     render() {
         return (
             <div>

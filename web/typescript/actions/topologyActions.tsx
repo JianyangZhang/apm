@@ -1,13 +1,26 @@
 export const saveTopology = (datagram) => {
     return {
         type: "save_topology",
-        payload: datagram
+        datagram
     };
 }
 
-export const selectNodes = (nodes) => {
+export const selectNodes = (selectedNodes) => {
     return {
         type: "select_nodes",
-        payload: nodes
+        selectedNodes
+    };
+}
+export const selectEdges = (selectedEdges) => {
+    return {
+        type: "select_edges",
+        selectedEdges
+    }
+}
+
+export const editTopology = (datagram) => {
+    return {
+        type: "edit_topology",
+        datagram
     };
 }

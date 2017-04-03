@@ -1,3 +1,4 @@
+/*
 export const nodeStateReducer = (state = { selectedNodes: [] }, action) => {
     switch (action.type) {
         case "select_nodes":
@@ -8,3 +9,4 @@ export const nodeStateReducer = (state = { selectedNodes: [] }, action) => {
             return state;
     }
 }
+*/

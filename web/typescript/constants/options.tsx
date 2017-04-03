@@ -66,10 +66,11 @@ export var options = {
         enabled: false,
         initiallyActive: true,
         addNode: function(nodeInfo, callback) {
+            nodeInfo.topology_id = "sample";
             nodeInfo.label = "new node";
-            nodeInfo.size = 20;
             nodeInfo.shape = "circularImage";
             nodeInfo.image = "./img/computer.png";
+            nodeInfo.size = 20;
             callback(nodeInfo);
         },
         editNode: function(nodeInfo, callback) {

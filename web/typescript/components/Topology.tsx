@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { saveTopology, selectNodes } from "../actions/topologyActions";
+import { editTopology, saveTopology, selectNodes, selectEdges } from "../actions/topologyActions";
 import { Toolbar } from "./ui/Toolbar";
 import { Network } from "./ui/Network";
 import { Console } from "./ui/Console";
@@ -19,7 +19,8 @@ class Topology extends React.Component<any, any> {
         super(props, context);
         this.state = this.initState();
         this.id = "sample";
-        this.generateMenuItems();
+        this.flag = 0;
+        this.generateMenuItems(props);
     }
 
     private initState = () => {
@@ -30,62 +31,21 @@ class Topology extends React.Component<any, any> {
         };
     }
 
-    generateMenuItems = () => {
+    generateMenuItems = (props) => {
         this.menuItems = [
-            {
-                text: "增加节点", type: "button", getStyle: () => {
-                    return { disabled: false }
-                }, callback: () => { this.setState({ edit_mode: "add_node" }); }
-            },
-            {
-                text: "编辑节点", type: "button", getStyle: () => {
-                    if (this.props.nodeState.selectedNodes.length != 0) {
-                        return {
-                            color: "black"
-                        }
-                    } else {
-                        return {
-                            pointerEvents: "none",
-                            color: "gray"
-                        }
-                    }
-                }, callback: () => { this.setState({ edit_mode: "edit_node", isEditing: true }); }
-            },
-            {
-                text: "增加连接", type: "button", getStyle: () => {
-                    return { disabled: false }
-                }, callback: () => { this.setState({ edit_mode: "add_edge" }); }
-            },
-            {
-                text: "编辑连接", type: "button", getStyle: () => {
-                    return { disabled: false }
-                }, callback: () => { this.setState({ edit_mode: "edit_edge" }); }
-            },
-            {
-                text: "删除元素", type: "button", getStyle: () => {
-                    return { disabled: false }
-                }, callback: () => { this.setState({ edit_mode: "delete_selected" }); }
-            },
-            {
-                text: "改变布局", type: "button", getStyle: () => {
-                    return { disabled: false }
-                }, callback: () => { this.setState({ edit_mode: "layout" }); }
-            },
-            {
-                text: "保存拓扑", type: "button", getStyle: () => {
-                    return { disabled: false }
-                }, callback: () => { this.setState({ edit_mode: "save" + this.flag }); this.flag = (this.flag == 0) ? 1 : 0; }
-            },
-            {
-                text: "锁定 ", type: "checkbox", getStyle: () => {
-                    return { disabled: false }
-                }, callback: () => { this.setState({ edit_mode: "none", isLocked: !this.state.isLocked }); }
-            },
+            { text: "增加节点", type: "button", isDisabled: false, getStyle: () => { }, callback: () => { this.setState({ edit_mode: "add_node", isEditing: true }); } },
+            { text: "编辑节点", type: "button", isDisabled: (props.nodeState.selectedNodes.length == 0) ? true : false, getStyle: () => { }, callback: () => { this.setState({ edit_mode: "edit_node", isEditing: true }); } },
+            { text: "增加连接", type: "button", isDisabled: false, getStyle: () => { }, callback: () => { this.setState({ edit_mode: "add_edge" }); } },
+            { text: "编辑连接", type: "button", isDisabled: (props.edgeState.selectedEdges.length == 1) ? false : true, getStyle: () => { }, callback: () => { this.setState({ edit_mode: "edit_edge", isEditing: true }); } },
+            { text: "删除元素", type: "button", isDisabled: false, getStyle: () => { }, callback: () => { this.setState({ edit_mode: "delete_selected" }); } },
+            { text: "改变布局", type: "button", isDisabled: false, getStyle: () => { }, callback: () => { this.setState({ edit_mode: "layout" }); } },
+            { text: "保存拓扑", type: "button", isDisabled: false, getStyle: () => { }, callback: () => { this.setState({ edit_mode: "save" + this.flag }); this.flag = (this.flag == 0) ? 1 : 0; } },
+            { text: "锁定 ", type: "checkbox", isDisabled: false, getStyle: () => { }, callback: () => { this.setState({ edit_mode: "none", isLocked: !this.state.isLocked }); } },
         ]
     }
 
-    componentWillUpdate() {
-        this.generateMenuItems();
+    componentWillUpdate(nextProps, nextState) {
+        this.generateMenuItems(nextProps);
     }
 
     componentDidUpdate() {
@@ -102,6 +62,12 @@ class Topology extends React.Component<any, any> {
         });
     }
 
+    toggleEditing = () => {
+        this.setState({
+            isEditing: !this.state.isEditing
+        });
+    }
+
     render() {
         return (
             <div id="main">
@@ -111,8 +77,11 @@ class Topology extends React.Component<any, any> {
                     datagram={this.props.datagram}
                     isLocked={this.state.isLocked}
                     isEditing={this.state.isEditing}
+                    toggleEditing={this.toggleEditing}
                     editMode={this.state.edit_mode}
                     onNodesSelect={this.props.selectNodes}
+                    onEdgesSelect={this.props.selectEdges}
+                    onEdit={this.props.editTopology}
                     onSave={this.props.saveTopology}
                 />
                 <Console editMode={this.state.edit_mode} isEditing={this.state.isEditing} onConfirm={this.quitEditing} onCancel={this.quitEditing} />
@@ -124,16 +93,25 @@ class Topology extends React.Component<any, any> {
 
 
 const mapStateToProps = (storeState) => {
+    const nodeList = Object.keys(storeState.topology.datagram.nodes).map(id=>storeState.topology.datagram.nodes[id]);
+    const edgeList = Object.keys(storeState.topology.datagram.edges).map(id=>storeState.topology.datagram.edges[id]);
+    const topologyDatagram = {
+        nodes: nodeList,
+        edges: edgeList
+    };
     return {
-        datagram: storeState.datagram,
-        nodeState: storeState.nodeState
+        datagram: topologyDatagram,
+        nodeState: storeState.topology.nodeState,
+        edgeState: storeState.topology.edgeState
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
-        saveTopology: saveTopology,
-        selectNodes: selectNodes
+        editTopology, // 同步到store
+        saveTopology, // 写入数据库
+        selectNodes,
+        selectEdges
     }, dispatch);
 }
 
