@@ -67,14 +67,45 @@ export var options = {
         initiallyActive: true,
         addNode: function(nodeInfo, callback) {
             nodeInfo.topology_id = "sample";
-            nodeInfo.label = "new node";
             nodeInfo.shape = "circularImage";
             nodeInfo.image = "./img/computer.png";
-            nodeInfo.size = 20;
+            nodeInfo.label = $("#add_node_label").val();
+            nodeInfo.res_id = $("#add_node_res_id").val();
+            const nodeSize: number = parseInt($("#add_node_size").val());
+            if (nodeSize >= 1 && nodeSize <= 100) {
+                nodeInfo.size = nodeSize;
+            }
+            switch ($("#add_node_shape").val()) {
+                case "computer":
+                    nodeInfo.shape = "circularImage";
+                    nodeInfo.image = "./img/computer.png";
+                    break;
+                case "user":
+                    nodeInfo.shape = "circularImage";
+                    nodeInfo.image = "./img/user.png";
+                    break;
+                case "api":
+                    nodeInfo.shape = "circularImage";
+                    nodeInfo.image = "./img/api.png";
+                    break;
+                case "download":
+                    nodeInfo.shape = "circularImage";
+                    nodeInfo.image = "./img/download.png";
+                    break;
+                case "disk":
+                    nodeInfo.shape = "circularImage";
+                    nodeInfo.image = "./img/disk.png";
+                    break;
+                default:
+                    nodeInfo.shape = $("#add_node_shape").val();
+                    nodeInfo.image = null;
+                    break;
+            }
             callback(nodeInfo);
         },
         editNode: function(nodeInfo, callback) {
             nodeInfo.label = $("#edit_node_label").val();
+            nodeInfo.res_id = $("#edit_node_res_id").val();
             if ($("#edit_node_shape").val() != "stay_the_same") {
                 switch ($("#edit_node_shape").val()) {
                     case "computer":
@@ -125,6 +156,7 @@ export var options = {
         }
     },
     interaction: {
+        multiselect: false,
         keyboard: true,
         navigationButtons: true,
         zoomView: true,

@@ -10,6 +10,7 @@ public class Node {
 	@Id
 	String id;
 	
+	String res_id;
 	String label;
 	String shape;
 	String image;
@@ -21,10 +22,11 @@ public class Node {
 		super();
 	}
 	
-	public Node(String topology_id, String id, String label, String shape, String image, int size, int x, int y) {
+	public Node(String topology_id, String id, String res_id, String label, String shape, String image, int size, int x, int y) {
 		super();
 		this.topology_id = topology_id;
 		this.id = id;
+		this.res_id = res_id;
 		this.label = label;
 		this.shape = shape;
 		this.image = image;
@@ -32,11 +34,12 @@ public class Node {
 		this.x = x;
 		this.y = y;
 	}
-
+	
+	
 	@Override
 	public String toString() {
-		return "Node [topology_id=" + topology_id + ", id=" + id + ", label=" + label + ", shape=" + shape + ", image="
-				+ image + ", size=" + size + ", x=" + x + ", y=" + y + "]";
+		return "Node [topology_id=" + topology_id + ", id=" + id + ", res_id=" + res_id + ", label=" + label
+				+ ", shape=" + shape + ", image=" + image + ", size=" + size + ", x=" + x + ", y=" + y + "]";
 	}
 
 	public String getTopology_id() {
@@ -53,6 +56,14 @@ public class Node {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getRes_id() {
+		return res_id;
+	}
+
+	public void setRes_id(String res_id) {
+		this.res_id = res_id;
 	}
 
 	public String getLabel() {

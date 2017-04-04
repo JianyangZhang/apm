@@ -9,9 +9,8 @@ public class Edge {
 	String topology_id;
 	@Id
 	String id;
-	@Id
+
 	String from;
-	@Id
 	String to;
 	
 	public Edge() {

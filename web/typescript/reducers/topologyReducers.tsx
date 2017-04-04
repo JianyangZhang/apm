@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import { datagram } from "../constants/datagram";
+// import { datagram } from "../constants/topologyConstants/datagram";
 import { assign } from 'lodash';
 
 const defaultState = {
@@ -15,7 +15,6 @@ const defaultState = {
     }
 }
 
-/*
 const datagram = {
     nodes: [],
     edges: []
@@ -35,7 +34,6 @@ $.ajax({
     },
     dataType: "json"
 });
-
 $.ajax({
     async: false,
     url: "/topology/edges/sample",
@@ -50,17 +48,39 @@ $.ajax({
     },
     dataType: "json"
 });
-*/
+
+const nodesObj = datagram.nodes.reduce(function(newObj, oldObj) {
+    newObj[oldObj.id] = oldObj;
+    return newObj;
+}, {});
+const edgesObj = datagram.edges.reduce(function(newObj, oldObj) {
+    newObj[oldObj.id] = oldObj;
+    return newObj;
+}, {});
+
+defaultState.datagram.nodes = nodesObj;
+defaultState.datagram.edges = edgesObj;
 
 export const topologyReducer = (previousState = defaultState, action) => {
     switch (action.type) {
-        case "edit_topology":
-            return assign({}, previousState, {
-                datagram: {
-                    nodes: action.datagram.nodes,
-                    edges: action.datagram.edges
-                }
-            });
+        case "add_node":
+            previousState.datagram.nodes[action.info.id] = action.info.data;
+            return previousState;
+        case "drag_node":
+            previousState.datagram.nodes[action.info.id].x = action.info.data.x;
+            previousState.datagram.nodes[action.info.id].y = action.info.data.y;
+            return previousState;
+        case "add_edge":
+            previousState.datagram.edges[action.info.id] = action.info.data;
+            return previousState;
+        case "delete_selected":
+            for (let i = 0; i < action.info.nodes.length; i++) {
+                delete previousState.datagram.nodes[action.info.nodes[i]];
+            }
+            for (let i = 0; i < action.info.edges.length; i++) {
+                delete previousState.datagram.edges[action.info.edges[i]];
+            }
+            return previousState;
         case "save_topology":
             if (action.datagram.nodes == "delete") {
                 const deleteURL: string = "/topology/" + action.datagram.topology_id;
@@ -119,7 +139,6 @@ export const topologyReducer = (previousState = defaultState, action) => {
                 newObj[oldObj.id] = oldObj;
                 return newObj;
             }, {});
-            console.log(nodesObj);
             return assign({}, previousState, {
                 datagram: {
                     nodes: nodesObj,

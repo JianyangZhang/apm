@@ -18,9 +18,10 @@ export const selectEdges = (selectedEdges) => {
     }
 }
 
-export const editTopology = (datagram) => {
+// add_node: {id: 101, data: {id: 101, ...}}
+export const editTopology = (operation, info) => {
     return {
-        type: "edit_topology",
-        datagram
+        type: operation,
+        info
     };
 }

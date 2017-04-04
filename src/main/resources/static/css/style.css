@@ -19,7 +19,12 @@ button {
     height: 600px;
 }
 
-#add_node_panel, #edit_node_panel, #edit_edge_panel, #layout_panel, #pop_message {
+#add_node_panel,
+#edit_node_panel,
+#add_edge_panel,
+#edit_edge_panel,
+#layout_panel,
+#pop_message {
     position: absolute;
     text-align: center;
     display: table;
@@ -42,7 +47,10 @@ button {
     height: 29px;
 }
 
-.vis-up, .vis-down, .vis-left, .vis-right {
+.vis-up,
+.vis-down,
+.vis-left,
+.vis-right {
     display: none !important;
 }
 
@@ -57,6 +65,7 @@ div.vis-network div.vis-navigation div.vis-button.vis-zoomIn {
     right: 10px;
     top: 60px;
 }
+
 div.vis-network div.vis-navigation div.vis-button.vis-zoomOut {
     background-image: url("../img/network/minus.png");
     right: 10px;

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as vis from "vis";
-import { options } from "../../constants/options";
+import { options } from "../../../constants/topologyConstants/options";
 
 export class Network extends React.Component<any, any> {
     private network: any;
@@ -10,8 +10,6 @@ export class Network extends React.Component<any, any> {
     private edges: any;
     private datagram: any;
     private options: any;
-    private selected_nodes_id: any;
-    private selected_edges_id: any;
     constructor(props, context) {
         super(props, context);
         this.nodes = new vis.DataSet(this.props.datagram.nodes);
@@ -21,16 +19,17 @@ export class Network extends React.Component<any, any> {
             edges: this.edges
         }
         this.options = options;
-        this.selected_nodes_id = [];
-        this.selected_edges_id = [];
     }
     componentDidMount() {
         const that = this;
         this.container = document.getElementById("network");
         this.network = new vis.Network(this.container, this.datagram, this.options);
         this.network.on("dragEnd", function() {
-            if (this.selected_nodes_id.length != 0) {
-                const selected_node_id = this.selected_nodes_id[0];
+            // 每次拖拽后, 同步 "选中状态" 和 "被拖拽的node的新坐标" 到store
+            const selected_nodes_id = this.getSelectedNodes();
+            that.props.onNodesSelect(selected_nodes_id);
+            if (selected_nodes_id.length != 0) {
+                const selected_node_id = selected_nodes_id[0];
                 const position = this.getPositions(selected_node_id);
                 const currentNodePosition = {
                     id: selected_node_id,
@@ -38,8 +37,49 @@ export class Network extends React.Component<any, any> {
                     y: Math.round(position[selected_node_id].y)
                 }
                 that.nodes.update(currentNodePosition);
+                that.props.onEdit("drag_node", { id: selected_node_id, data: currentNodePosition });
             }
         });
+
+        this.network.on("release", function() {
+            // 如果在增加元素的编辑状态, 继续添加模式
+            if (that.props.isEditing && that.props.editMode == "add_node") {
+                this.addNodeMode();
+            }
+            if (that.props.isEditing && that.props.editMode == "add_edge") {
+                this.addEdgeMode();
+            }
+        });
+        this.nodes.on("add", function() {
+            const list = that.nodes.get();
+            const new_node_data = list[list.length - 1];
+            const new_node_id = new_node_data.id;
+            const info = {
+                id: new_node_id,
+                data: new_node_data
+            }
+            that.props.onEdit("add_node", info);
+        });
+        this.edges.on("add", function() {
+            const list = that.edges.get();
+            const new_edge_data = list[list.length - 1];
+            const new_edge_id = new_edge_data.id;
+            const info = {
+                id: new_edge_id,
+                data: new_edge_data
+            }
+            that.props.onEdit("add_edge", info);
+        });
+        this.nodes.on("remove", function() {
+            that.props.onNodesSelect([]);
+            that.props.onEdgesSelect([]);
+        });
+        this.edges.on("remove", function() {
+            that.props.onNodesSelect([]);
+            that.props.onEdgesSelect([]);
+        });
+
+        // 正常操作
         this.network.on("selectNode", function() {
             const selected_nodes_id = this.getSelectedNodes();
             that.props.onNodesSelect(selected_nodes_id);
@@ -56,21 +96,6 @@ export class Network extends React.Component<any, any> {
             const selected_edges_id = this.getSelectedEdges();
             that.props.onEdgesSelect(selected_edges_id);
         });
-        this.network.on("click", function(obj) {
-            if (that.props.isEditing) {
-
-            }
-        });
-        this.network.on("release", function() {
-            if (that.props.isEditing && that.props.editMode == "add_node") {
-                this.addNodeMode();
-            }
-            this.selected_nodes_id = this.getSelectedNodes();
-            if (this.selected_nodes_id.length == 0) {
-                return;
-            }
-            that.props.onNodesSelect(this.selected_nodes_id);
-        });
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -78,18 +103,26 @@ export class Network extends React.Component<any, any> {
         if (editMode == "save" && nextProps.editMode == this.props.editMode) {
             return false;
         }
+        if (editMode == "delete_selected" && nextProps.editMode == this.props.editMode) {
+            return false;
+        }
         return true;
     }
 
     componentDidUpdate() {
         const network = this.network;
-        const selected_node_id = network.getSelectedNodes()[0];
+        const selected_nodes_id = network.getSelectedNodes();
+        const selected_edges_id = network.getSelectedEdges();
+        const selected_node_id = selected_nodes_id[0];
+        const selected_edge_id = selected_edges_id[0];
         const selected_node_label = this.nodes.get(selected_node_id).label;
         const selected_node_size = this.nodes.get(selected_node_id).size;
+        const selected_node_res_id = this.nodes.get(selected_node_id).res_id;
         let updateOptions = {};
         if (this.props.isLocked) {
             updateOptions = {
                 interaction: {
+                    multiselect: false,
                     keyboard: false,
                     navigationButtons: false,
                     zoomView: false,
@@ -103,6 +136,7 @@ export class Network extends React.Component<any, any> {
         } else {
             updateOptions = {
                 interaction: {
+                    multiselect: false,
                     keyboard: true,
                     navigationButtons: true,
                     zoomView: true,
@@ -117,6 +151,7 @@ export class Network extends React.Component<any, any> {
         const editMode = this.props.editMode.replace(/[0-9]/g, '');
         switch (editMode) {
             case "add_node":
+                $("#add_node_label").val("新节点");
                 network.addNodeMode();
                 if (!this.props.isEditing) {
                     network.disableEditMode();
@@ -135,6 +170,7 @@ export class Network extends React.Component<any, any> {
                     $("#edit_node_size").prop('disabled', false);
                     $("#edit_node_confirm").prop('disabled', false);
                     $("#edit_node_label").val(selected_node_label);
+                    $("#edit_node_res_id").val(selected_node_res_id);
                     $("#edit_node_shape").val("stay_the_same");
                     $("#edit_node_size").val(selected_node_size);
                     $("#edit_node_confirm").on("click", function() {
@@ -144,6 +180,9 @@ export class Network extends React.Component<any, any> {
                 break;
             case "add_edge":
                 network.addEdgeMode();
+                if (!this.props.isEditing) {
+                    network.disableEditMode();
+                }
                 break;
             case "edit_edge":
                 network.editEdgeMode();
@@ -152,6 +191,7 @@ export class Network extends React.Component<any, any> {
                 }
                 break;
             case "delete_selected":
+                this.props.onEdit("delete_selected", { nodes: selected_nodes_id, edges: selected_edges_id });
                 network.deleteSelected();
                 break;
             case "layout":
@@ -269,52 +309,41 @@ export class Network extends React.Component<any, any> {
                 });
                 break;
             case "save":
-                if (this.nodes.get().length == 0) {
-                    const currentDatagram = {
-                        nodes: "delete",
-                        edges: "delete",
-                        topology_id: this.props.id
-                    }
-                    this.props.onSave(currentDatagram);
-                    break;
-                }
-                const that = this;
-                this.nodes.forEach(function(node) {
-                    that.nodes.update({ id: node.id, x: Math.round(node.x), y: Math.round(node.y) });
-                });
-                this.edges.forEach(function(edge) {
-                    that.edges.update({ id: edge.id, topology_id: that.props.id });
-                });
-                const currentDatagram = {
-                    nodes: this.nodes.get(),
-                    edges: this.edges.get()
-                }
-                if (this.props.onSave) {
-                    this.props.onSave(currentDatagram);
-                }
-                console.log("准备写入数据库的nodes: ", currentDatagram.nodes);
-                console.log("准备写入数据库的edges: ", currentDatagram.edges);
+                this.sync(); // sync everything for graph, store, and database.
                 break;
             default:
                 break;
         }
     }
-    /*
-        syncStore = () => {
-            const that = this;
-            this.nodes.forEach(function(node) {
-                that.nodes.update({ id: node.id, x: Math.round(node.x), y: Math.round(node.y) });
-            });
-            this.edges.forEach(function(edge) {
-                that.edges.update({ id: edge.id, topology_id: that.props.id });
-            });
+
+    sync = () => {
+        if (this.nodes.get().length == 0) {
             const currentDatagram = {
-                nodes: this.nodes.get(),
-                edges: this.edges.get()
+                nodes: "delete",
+                edges: "delete",
+                topology_id: this.props.id
             }
-            this.props.onEdit(currentDatagram);
+            this.props.onSave(currentDatagram);
+            return;
         }
-    */
+        const that = this;
+        this.nodes.forEach(function(node) {
+            that.nodes.update({ id: node.id, x: Math.round(node.x), y: Math.round(node.y) });
+        });
+        this.edges.forEach(function(edge) {
+            that.edges.update({ id: edge.id, topology_id: that.props.id });
+        });
+        const currentDatagram = {
+            nodes: this.nodes.get(),
+            edges: this.edges.get()
+        }
+        if (this.props.onSave) {
+            this.props.onSave(currentDatagram);
+        }
+        console.log("准备写入数据库的nodes: ", currentDatagram.nodes);
+        console.log("准备写入数据库的edges: ", currentDatagram.edges);
+    }
+
     render() {
         return (
             <div>
