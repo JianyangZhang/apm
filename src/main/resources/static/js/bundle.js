@@ -41017,7 +41017,7 @@
 	            React.createElement(Toolbar_1.Toolbar, { items: this.menuItems, isEditing: this.state.isEditing, isLocked: this.state.isLocked }),
 	            React.createElement(Network_1.Network, { id: this.id, datagram: this.props.datagram, isLocked: this.state.isLocked, isEditing: this.state.isEditing, toggleEditing: this.toggleEditing, editMode: this.state.edit_mode, onNodesSelect: this.props.selectNodes, onEdgesSelect: this.props.selectEdges, onEdit: this.props.editTopology, onSave: this.props.saveTopology }),
 	            React.createElement(Console_1.Console, { editMode: this.state.edit_mode, isEditing: this.state.isEditing, onConfirm: this.quitEditing, onCancel: this.quitEditing }),
-	            React.createElement(RightClickMenu_1.RightClickMenu, { items: this.menuItems })));
+	            React.createElement(RightClickMenu_1.RightClickMenu, { items: this.menuItems, isEditing: this.state.isEditing, isLocked: this.state.isLocked })));
 	    };
 	    return Topology;
 	}(React.Component));
@@ -94269,19 +94269,23 @@
 	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
+	var lodash_1 = __webpack_require__(218);
 	var RightClickMenu = (function (_super) {
 	    __extends(RightClickMenu, _super);
 	    function RightClickMenu(props, context) {
 	        return _super.call(this, props, context) || this;
 	    }
 	    RightClickMenu.prototype.render = function () {
+	        var _this = this;
 	        var style = {
 	            position: "absolute"
 	        };
 	        return (React.createElement("div", { id: "right_click_menu", style: style }, this.props.items.map(function (item, index) {
 	            if (item.type == "button") {
+	                var checkDisabled = (_this.props.isLocked || item.isDisabled) ? true : false;
+	                var itemStyle = lodash_1.assign({}, item.getStyle(), { display: _this.props.isEditing ? "none" : "inline-block", color: checkDisabled ? "gray" : "black" });
 	                return (React.createElement("div", { key: index },
-	                    React.createElement("button", { onClick: item.callback }, item.text),
+	                    React.createElement("button", { style: itemStyle, key: index, onClick: item.callback, disabled: checkDisabled }, item.text),
 	                    React.createElement("br", null)));
 	            }
 	        })));

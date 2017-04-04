@@ -85,7 +85,7 @@ class Topology extends React.Component<any, any> {
                     onSave={this.props.saveTopology}
                 />
                 <Console editMode={this.state.edit_mode} isEditing={this.state.isEditing} onConfirm={this.quitEditing} onCancel={this.quitEditing} />
-                <RightClickMenu items={this.menuItems} />
+                <RightClickMenu items={this.menuItems} isEditing={this.state.isEditing} isLocked={this.state.isLocked} />
             </div>
         )
     }
